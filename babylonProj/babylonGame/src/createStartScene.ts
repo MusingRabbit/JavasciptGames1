@@ -4,6 +4,7 @@ import {
     Scene,
     ArcRotateCamera,
     Vector3,
+    Color3,
     HemisphericLight,
     MeshBuilder,
     Mesh,
