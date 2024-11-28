@@ -20,7 +20,7 @@ export class GameObjectSystem extends System {
         return result;
     }
 
-    public AddGameObject(gameObj :GameObject) : void {
+    public AddGameObject(gameObj : GameObject) : void {
         this.gameObjs.set(gameObj.id, gameObj);
     }
 

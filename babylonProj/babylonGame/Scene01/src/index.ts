@@ -15,3 +15,5 @@ let eng = new Engine(canvas, true, {}, true);
 let game = new SimpleGame(eng);
 
 game.Initialise();
+
+game.ShowDebugLayer();

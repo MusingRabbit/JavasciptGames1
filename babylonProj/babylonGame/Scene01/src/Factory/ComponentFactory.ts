@@ -77,19 +77,19 @@ export class ComponentFactory
             switch(args.shape)
             {
                 case ShapeType.Box:
-                    let box = this.sceneFactory.CreateBox("box", args.transform);
+                    let box = this.sceneFactory.CreateBox(args.name + "_box", args.transform);
                     result.SetMesh(box);
                     break;
                 case ShapeType.Capsule:
-                    let capsule = this.sceneFactory.CreateCapsule("captsule", args.transform);
+                    let capsule = this.sceneFactory.CreateCapsule(args.name + "_captsule", args.transform);
                     result.SetMesh(capsule);
                     break;
                 case ShapeType.Plane:
-                    let plane = this.sceneFactory.CreatePlane("plane", args.transform);
+                    let plane = this.sceneFactory.CreatePlane(args.name + "_plane", args.transform);
                     result.SetMesh(plane);
                     break;
                 case ShapeType.Sphere:
-                    let sphere = this.sceneFactory.CreateSphere("sphere", args.transform, 64);
+                    let sphere = this.sceneFactory.CreateSphere(args.name + "_sphere", args.transform, 64);
                     result.SetMesh(sphere);
                     break;
             }

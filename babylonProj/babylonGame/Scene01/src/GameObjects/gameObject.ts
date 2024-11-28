@@ -3,6 +3,7 @@ import {Component, Transform} from "../Components/component";
 export default class GameObject
 {
     id : string;
+    name : string;
     transform : Transform;
     components : Component[];
 

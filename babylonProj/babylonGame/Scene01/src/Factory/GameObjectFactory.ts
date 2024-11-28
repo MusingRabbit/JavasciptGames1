@@ -46,8 +46,10 @@ export class GameObjectFactory
 
         let result = this.CreateGameObject(transform);
 
+        result.name = "gamObj" + ShapeType[shape];
+
         let renderCmp = this.componentFactory.CreateRenderComponent(
-            { name:"shape", transform : transform, shape : shape });
+            { name:"cmp", transform : transform, shape : shape });
 
         result.components.push(renderCmp);
         

@@ -4,6 +4,7 @@ import SceneFactory from "./Factory/SceneFactory";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "./Components/component";
 import GameObject from "./GameObjects/gameObject";
 import { GameObjectFactory } from "./Factory/GameObjectFactory";
+import { MathHelper } from "./mathHelper";
 
 export class SimpleGame extends Game
 {
@@ -22,8 +23,6 @@ export class SimpleGame extends Game
     public Initialise(): void {
         this.setupBasicScene();
 
-        this.ShowDebugLayer();
-
         super.Initialise();
     }
 
@@ -34,15 +33,17 @@ export class SimpleGame extends Game
         let y = Math.sin(this.counter);
 
         this.counter = this.counter + 1 * dt;
-        console.log(dt);
+        //console.log(dt);
 
         let rot = Quaternion.FromEulerAngles(x,y,x);
-        this.gameObj1.transform.rotation = rot;
-        this.gameObj1.transform.position = new Vector3(x, y, x);
+        //this.gameObj1.transform.rotation = rot;
+        //this.gameObj1.transform.position = new Vector3(x, y, x);
 
         
+        this.gameObj2.transform.position = new Vector3(x,y,x);
+        
 
-        console.log(this.ground.transform.rotation);
+        //console.log(this.ground.transform.rotation);
 
         //this.gameObj1.transform.rotation = Quaternion.Slerp(this.gameObj1.transform.rotation, this.gameObj1.transform.rotation, 100);
 
@@ -57,20 +58,21 @@ export class SimpleGame extends Game
 
     private setupBasicScene() : void 
     {
-        this.gameObj1 = this.objFactory.CreateShapeGameObject(Vector3.Zero(), ShapeType.Box);
-        
+        this.gameObj1 = this.objFactory.CreateShapeGameObject(new Vector3(0,-1.5,0), ShapeType.Box);
+        this.gameObj2 = this.objFactory.CreateLightGameObject(Vector3.Zero(), LightType.Directional);
 
+        let rotX = MathHelper.DegToRad(-10);
+        let rotY = MathHelper.DegToRad(-10);
 
-        this.gameObj2 = this.objFactory.CreateLightGameObject(Vector3.Zero(), LightType.Hemispheric);
-        this.gameObj2.transform.rotation = Quaternion.FromEulerAngles(0,-90,0);
+        this.gameObj2.transform.rotation = Quaternion.FromEulerAngles(rotX, rotY,0);
 
         let cmp = this.gameObj2.GetComponent(LightComponent);
         cmp.light.intensity = 0.5;
 
         this.ground = this.objFactory.CreateShapeGameObject(new Vector3(0,-2,0), ShapeType.Plane);
-        this.ground.transform.rotation =  Quaternion.FromEulerAngles(90,0,0);
-        this.ground.transform.scale = new Vector3(10,10,1);
-
+        
+        this.ground.transform.rotation = Quaternion.FromEulerAngles(MathHelper.DegToRad(90),0,0);
+        this.ground.transform.scale = new Vector3(10,10,10);
 
         this.sceneFactory.CreateArcRotateCamera("camera", true);
     }

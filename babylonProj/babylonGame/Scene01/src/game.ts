@@ -3,6 +3,8 @@ import SceneFactory from "./Factory/SceneFactory";
 import GameObject from "./GameObjects/gameObject";
 import { GameObjectSystem } from "./Systems/GameObjectSystem";
 import { GameObjectFactory } from "./Factory/GameObjectFactory";
+import "@babylonjs/inspector"
+import "@babylonjs/core/Debug/debugLayer"
 
 export default class Game 
 {
