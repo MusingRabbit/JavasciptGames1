@@ -3,69 +3,56 @@ import { GameObjectSystem } from "../Systems/GameObjectSystem";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "../Components/component";
 import SceneFactory from "../SceneFactory";
 import GameObject from "../GameObjects/gameObject";
+import { ComponentFactory } from "./ComponentFactory";
 
 
-class CreateRenderComponentArgs
-{
-    name : string;
-    transform : Transform;
-    mesh : Mesh;
-    texture : Texture;
-}
-
-class CreateLightComponentArgs
-{
-    name : string;
-    position : Vector3;
-    type : LightType;
-    colour : Color3;
-    direction : Vector3;
-    intensity : number;
-    angle : number;
-}
-
-
-class GameObjectFactory
+export class GameObjectFactory
 {
     gameObjSystem : GameObjectSystem;
-    sceneFactory : SceneFactory;
+    componentFactory : ComponentFactory;
     scene : Scene
 
     constructor(scene : Scene, gameObjSystem : GameObjectSystem)
     {
         this.gameObjSystem = gameObjSystem;
+        this.componentFactory = new ComponentFactory(scene);
         this.scene = scene;
     }
 
     public CreateGameObject(trans : Transform) : GameObject
     {
         let result = this.gameObjSystem.CreateGameObject(trans);
-
-        let box = this.sceneFactory.CreateBox("box", trans.position, trans.GetSize());
-        result.components.push(new RenderComponent(box));
         return result;
     }
 
-    public CreateLightComponent(args: CreateLightComponentArgs)
+    public CreateLightGameObject(position : Vector3, type : LightType) : GameObject
     {
-        let result = new LightComponent();
-        
-        switch(args.type)
-        {
-            case LightType.Hemispheric:
-                result.light = this.sceneFactory.CreateHemisphericLight(args.name, args.direction, args.colour, args.intensity);
-                break;
-            case LightType.Spot:
-                result.light = this.sceneFactory.CreateSpotLight(args.name, args.position, args.direction, args.colour, args.angle , args.intensity)
-                break;
-            case LightType.Directional:
-                result.light = this.sceneFactory.CreateDirectionalLight(args.name, args.position, args.direction, args.colour, args.intensity);
-                break;
-            case LightType.Point:
-                result.light = this.sceneFactory.CreatePointLight(args.name, args.position, args.colour, args.intensity);
-                break;
-        }
+        let transform = new Transform();
+        transform.position = position;
+
+        let result = this.CreateGameObject(transform);
+
+        let lightCmp = this.componentFactory.CreateLightComponent({name : "simpleLight", type : type, transform : transform, colour : Color3.White()});
+
+        result.AddComponent(lightCmp);
 
         return result;
     }
+
+    public CreateShapeGameObject(position : Vector3, shape: ShapeType) : GameObject
+    {
+        let transform = new Transform();
+        transform.position = position;
+
+        let result = this.CreateGameObject(transform);
+
+        let renderCmp = this.componentFactory.CreateRenderComponent(
+            { name:"shape", transform : transform, shape : shape });
+
+        result.components.push(renderCmp);
+        
+        return result;
+    }
+
+
 }

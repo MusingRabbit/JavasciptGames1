@@ -1,4 +1,5 @@
-import { Scene, Vector3, Color3, HemisphericLight, PointLight, DirectionalLight, SpotLight, Mesh, MeshBuilder, StandardMaterial, Vector2, Texture, IShadowLight, ShadowGenerator, ArcRotateCamera } from "@babylonjs/core";
+import { Scene, Vector3, Color3, HemisphericLight, PointLight, DirectionalLight, SpotLight, Mesh, MeshBuilder, StandardMaterial, Vector2, Texture, IShadowLight, ShadowGenerator, ArcRotateCamera, Quaternion } from "@babylonjs/core";
+import { Transform } from "./Components/component";
 
 export default class SceneFactory {
   scene: Scene;
@@ -47,19 +48,34 @@ export default class SceneFactory {
     return result;
   }
 
-  public CreateBox(name: string, pos: Vector3, boxSize: number): Mesh {
-    let result = MeshBuilder.CreateBox(name, { size: boxSize }, this.scene);
-    result.position = pos;
+  public CreateBox(name: string, transform : Transform): Mesh {
+    let result = MeshBuilder.CreateBox(name, { size: transform.GetSize() }, this.scene);
+    result.position = transform.position;
+    result.rotationQuaternion = transform.rotation;
+
     result.receiveShadows = true;
     result.material = this.createDefaultMaterial("defaultMat");
 
     return result;
   }
 
-  public CreateSphere(name: string, pos: Vector3, diameter: number = 2, segments: number = 32) {
-    let result = MeshBuilder.CreateSphere(name, { diameter: diameter, segments: segments }, this.scene);
+  public CreateCapsule(name: string, transform : Transform): Mesh 
+  {
+    let result = MeshBuilder.CreateCapsule(name, {radius : transform.scale.x, height : transform.scale.y}, this.scene);
+    result.position = transform.position;
+    result.rotationQuaternion = transform.rotation;
 
-    result.position = pos;
+    result.receiveShadows = true;
+    result.material = this.createDefaultMaterial("defaultMat");
+
+    return result;
+  }
+
+  public CreateSphere(name: string, transform: Transform, segments: number = 32) {
+    let result = MeshBuilder.CreateSphere(name, { diameter: transform.scale.x, segments: segments }, this.scene);
+
+    result.position = transform.position;
+    result.rotationQuaternion = transform.rotation;
     result.receiveShadows = true;
     result.material = this.createDefaultMaterial("defaultMat");
 
@@ -73,8 +89,9 @@ export default class SceneFactory {
     return result;
   }
 
-  public CreateGround(name: string, dimensions: Vector2) {
-    let result = MeshBuilder.CreateGround(name, { width: dimensions.x, height: dimensions.y }, this.scene);
+  public CreateGround(name: string, transform : Transform) {
+    let result = MeshBuilder.CreateGround(name, { width: transform.scale.x, height: transform.scale.y }, this.scene);
+    result.position = transform.position;
     result.receiveShadows = true;
     result.material = this.createDefaultMaterial("defaultMat");
 
@@ -87,14 +104,14 @@ export default class SceneFactory {
     return result;
   }
 
-  public CreatePlane(name: string, pos: Vector3, txr: Texture, size: number) {
-    let result = MeshBuilder.CreatePlane(name, { size: size, sideOrientation: Mesh.DOUBLESIDE }, this.scene);
-    result.position = pos;
+  public CreatePlane(name: string, transform : Transform) {
+    let result = MeshBuilder.CreatePlane(name, { size: transform.GetSize(), sideOrientation: Mesh.DOUBLESIDE }, this.scene);
+    result.position = transform.position;
+    result.rotationQuaternion = transform.rotation;
 
     let mat = this.createDefaultMaterial("defaultMat");
     mat.diffuseColor = Color3.White();
     mat.specularColor = Color3.White();
-    mat.ambientTexture = txr;
 
     result.material = mat;
 
@@ -132,7 +149,10 @@ export default class SceneFactory {
   }
 
   public CreateArcRotateCamera(name: string, attatchControl: boolean): ArcRotateCamera {
-    let camAlpha = -Math.PI / 2, camBeta = Math.PI / 2.5, camDist = 10, camTarget = new Vector3(0, 0, 0);
+    let camAlpha = -Math.PI / 2;
+    let camBeta = Math.PI / 2.5;
+    let camDist = 10; 
+    let camTarget = new Vector3(0, 0, 0);
 
     let result = new ArcRotateCamera(
       name,

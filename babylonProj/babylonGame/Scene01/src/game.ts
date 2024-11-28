@@ -2,6 +2,7 @@ import { Engine, IShadowLight, Scene, ShadowGenerator, ShadowLight } from "@baby
 import SceneFactory from "./SceneFactory";
 import GameObject from "./GameObjects/gameObject";
 import { GameObjectSystem } from "./Systems/GameObjectSystem";
+import { GameObjectFactory } from "./Factory/GameObjectFactory";
 
 export default class Game 
 {
@@ -9,6 +10,9 @@ export default class Game
     scene : Scene;
     sceneFactory : SceneFactory;
     gameObjSys : GameObjectSystem;
+    objFactory : GameObjectFactory;
+
+    currTime : number;
 
     constructor(engine : Engine)
     {
@@ -16,6 +20,7 @@ export default class Game
         this.scene = new Scene(this.engine);
         this.sceneFactory = new SceneFactory(this.scene);
         this.gameObjSys = new GameObjectSystem();
+        this.objFactory = new GameObjectFactory(this.scene, this.gameObjSys);
     }
 
     public Initialise() : void

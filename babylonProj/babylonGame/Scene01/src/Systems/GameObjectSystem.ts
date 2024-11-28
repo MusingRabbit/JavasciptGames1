@@ -1,4 +1,4 @@
-import { SpotLight, DirectionalLight, PointLight } from "@babylonjs/core";
+import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix } from "@babylonjs/core";
 import { Transform, RenderComponent, LightComponent, CameraComponent } from "../Components/component";
 import GameObject from "../GameObjects/gameObject";
 import { System } from "./System";
@@ -15,13 +15,13 @@ export class GameObjectSystem extends System {
         result.id = this.getUID(36);
         result.transform = transform;
 
-        this.gameObjs[result.id] = result;
+        this.gameObjs.set(result.id, result);
 
         return result;
     }
 
     public AddGameObject(gameObj :GameObject) : void {
-        this.gameObjs[gameObj.id] = gameObj;
+        this.gameObjs.set(gameObj.id, gameObj);
     }
 
     public Initialise() : void {
@@ -39,8 +39,8 @@ export class GameObjectSystem extends System {
     }
 
     private processGameObjects(): void {
-        for (let obj of this.gameObjs) {
-            this.updateComponents(obj[1]);
+        for (let obj of this.gameObjs.values()) {
+            this.updateComponents(obj);
         }
     }
 
@@ -66,22 +66,30 @@ export class GameObjectSystem extends System {
 
 
     private updateLightPosition(transform: Transform, cmp: LightComponent): void {
+        let mtxRot = new Matrix();
+        transform.rotation.toRotationMatrix(mtxRot)
+        let dir = Vector3.TransformCoordinates(transform.position, mtxRot);
+
+
         if (cmp.light instanceof SpotLight) {
             cmp.light.position = transform.position;
+            cmp.light.direction = dir;
         }
 
         if (cmp.light instanceof DirectionalLight) {
             cmp.light.position = transform.position;
+            cmp.light.direction = dir;
         }
 
         if (cmp.light instanceof PointLight) {
             cmp.light.position = transform.position;
+            cmp.light.direction = dir;
         }
     }
 
     private updateMeshTransforms(transform: Transform, cmp: RenderComponent): void {
         cmp.mesh.position = transform.position;
-        cmp.mesh.rotation = transform.rotation.toEulerAngles();
+        cmp.mesh.rotationQuaternion = transform.rotation;
         cmp.mesh.scaling = transform.scale;
     }
 }
