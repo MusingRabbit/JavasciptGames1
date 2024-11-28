@@ -1,5 +1,5 @@
 import { Scene, Vector3, Color3, HemisphericLight, PointLight, DirectionalLight, SpotLight, Mesh, MeshBuilder, StandardMaterial, Vector2, Texture, IShadowLight, ShadowGenerator, ArcRotateCamera, Quaternion } from "@babylonjs/core";
-import { Transform } from "./Components/component";
+import { Transform } from "../Components/component";
 
 export default class SceneFactory {
   scene: Scene;
@@ -107,7 +107,7 @@ export default class SceneFactory {
   public CreatePlane(name: string, transform : Transform) {
     let result = MeshBuilder.CreatePlane(name, { size: transform.GetSize(), sideOrientation: Mesh.DOUBLESIDE }, this.scene);
     result.position = transform.position;
-    result.rotationQuaternion = transform.rotation;
+    result.scaling = transform.scale;
 
     let mat = this.createDefaultMaterial("defaultMat");
     mat.diffuseColor = Color3.White();
@@ -152,7 +152,7 @@ export default class SceneFactory {
     let camAlpha = -Math.PI / 2;
     let camBeta = Math.PI / 2.5;
     let camDist = 10; 
-    let camTarget = new Vector3(0, 0, 0);
+    let camTarget = Vector3.Zero();
 
     let result = new ArcRotateCamera(
       name,
@@ -163,7 +163,11 @@ export default class SceneFactory {
       this.scene
     );
 
-    result.attachControl(attatchControl);
+    if (attatchControl)
+    {
+      result.attachControl(attatchControl);
+    }
+
     return result;
   }
 }

@@ -1,6 +1,6 @@
 import { Engine, Color3, Quaternion, Vector2, Vector3 } from "@babylonjs/core";
 import Game from "./game";
-import SceneFactory from "./SceneFactory";
+import SceneFactory from "./Factory/SceneFactory";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "./Components/component";
 import GameObject from "./GameObjects/gameObject";
 import { GameObjectFactory } from "./Factory/GameObjectFactory";
@@ -40,7 +40,9 @@ export class SimpleGame extends Game
         this.gameObj1.transform.rotation = rot;
         this.gameObj1.transform.position = new Vector3(x, y, x);
 
-        //console.log(rot);
+        
+
+        console.log(this.ground.transform.rotation);
 
         //this.gameObj1.transform.rotation = Quaternion.Slerp(this.gameObj1.transform.rotation, this.gameObj1.transform.rotation, 100);
 
@@ -66,7 +68,7 @@ export class SimpleGame extends Game
         cmp.light.intensity = 0.5;
 
         this.ground = this.objFactory.CreateShapeGameObject(new Vector3(0,-2,0), ShapeType.Plane);
-        this.ground.transform.rotation = Quaternion.FromEulerAngles(90,0,0);
+        this.ground.transform.rotation =  Quaternion.FromEulerAngles(90,0,0);
         this.ground.transform.scale = new Vector3(10,10,1);
 
 

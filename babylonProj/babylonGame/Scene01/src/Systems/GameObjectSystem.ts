@@ -70,7 +70,6 @@ export class GameObjectSystem extends System {
         transform.rotation.toRotationMatrix(mtxRot)
         let dir = Vector3.TransformCoordinates(transform.position, mtxRot);
 
-
         if (cmp.light instanceof SpotLight) {
             cmp.light.position = transform.position;
             cmp.light.direction = dir;

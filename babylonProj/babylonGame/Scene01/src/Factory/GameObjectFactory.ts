@@ -1,7 +1,7 @@
 import { Color3, DirectionalLight, HemisphericLight, Mesh, PointLight, Scene, SpotLight, StandardMaterial, Texture, Vector3 } from "@babylonjs/core";
 import { GameObjectSystem } from "../Systems/GameObjectSystem";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "../Components/component";
-import SceneFactory from "../SceneFactory";
+import SceneFactory from "./SceneFactory";
 import GameObject from "../GameObjects/gameObject";
 import { ComponentFactory } from "./ComponentFactory";
 

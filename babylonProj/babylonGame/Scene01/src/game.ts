@@ -1,5 +1,5 @@
 import { Engine, IShadowLight, Scene, ShadowGenerator, ShadowLight } from "@babylonjs/core";
-import SceneFactory from "./SceneFactory";
+import SceneFactory from "./Factory/SceneFactory";
 import GameObject from "./GameObjects/gameObject";
 import { GameObjectSystem } from "./Systems/GameObjectSystem";
 import { GameObjectFactory } from "./Factory/GameObjectFactory";

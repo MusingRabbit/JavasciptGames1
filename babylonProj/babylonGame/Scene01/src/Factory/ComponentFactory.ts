@@ -1,6 +1,6 @@
 import { Color3, Material, Matrix, Mesh, Scene, Texture, Vector3 } from "@babylonjs/core";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "../Components/component";
-import SceneFactory from "../SceneFactory";
+import SceneFactory from "./SceneFactory";
 
 
 export class CreateCameraComponentArgs
