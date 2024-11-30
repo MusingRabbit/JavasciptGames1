@@ -12,14 +12,16 @@ canvas.classList.add("background-canvas");
 document.body.appendChild(canvas);
 
 
+try 
+{
+    let eng = new Engine(canvas, true, {}, true);
+    let game = new SimpleGame(eng);
 
-
-let eng = new Engine(canvas, true, {}, true);
-let game = new SimpleGame(eng);
-
-
-game.Initialise();
-
-game.Run();
-
-game.ShowDebugLayer();
+    game.Initialise();
+    game.Run();
+    game.ShowDebugLayer();
+}
+catch(ex)
+{
+    console.log(ex);
+}

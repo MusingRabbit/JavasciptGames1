@@ -1,15 +1,19 @@
 import { Texture } from "@babylonjs/core";
 import { LiteEvent } from "../Event/LiteEvent";
+import { FileHelper, PathInfo } from "../Util/File/FileHelper";
+import path from "path";
 
 export class TextureData
 {
-    fileName : string;
+    filePath : string;
+    name : string;
     texture : Texture;
     normal : Texture;
     diffuse : Texture;
 
-    constructor(fileName : string) {
-        this.fileName = fileName;
+    constructor(pathInfo : PathInfo) {
+        this.filePath = pathInfo.fullPath;
+        this.name = pathInfo.name;
     }
 }
 
@@ -35,65 +39,66 @@ export class TextureRepository
 
     public ClearCache()
     {
+        this.loadingFlags.clear();
         this.textureCache.clear();
     }
 
-    public GetTexture(fileName : string) : TextureData
+    public GetTexture(filePath : string) : TextureData
     {
-        this.loadingFlags.set(fileName, true);
-        let result = this.textureCache.get(fileName);
+        let result = this.textureCache.get(filePath);
 
         if (result)
         {
             return result;
         }
 
-        result = new TextureData(fileName);
-        let tokens = fileName.split('.');
-        let name = tokens[0];
-        let ext = tokens[1];
+        this.loadingFlags.set(filePath, true);
+
+        let pi = FileHelper.GetPathInfo(filePath);
+        result = new TextureData(pi);
 
         try 
         {
-            let txr = new Texture(this.txrDir + fileName);
+            let txr = new Texture(this.txrDir + pi.fullPath);
 
             txr.onLoadObservable.add((txr) => { 
-                result = new TextureData(fileName);
+                result = new TextureData(pi);
                 result.texture = txr;
-                result.diffuse = new Texture(this.txrDir + fileName + "_disp.png");
-                result.normal = new Texture(this.txrDir + fileName + "_norm.png");
+                result.diffuse = txr;
+                result.normal = new Texture(this.txrDir + pi.name + "_norm.png");
                 
-                this.onTextureLoadSuccess(fileName, result);
+                this.notifyTextureLoadSuccess(pi, result);
             });
 
             setTimeout(() => {
-                if (this.loadingFlags.get(fileName))
+                if (this.loadingFlags.get(pi.fullPath))
                 {
-                    this.onTextureLoadFailure(fileName, "load timeout" ,new TextureData(fileName));
+                    this.notifyTextureLoadFailure(pi, "load timeout" ,new TextureData(pi));
                 }
 
             }, this.loadTimeout);
         }
         catch (ex)
         {
-            this.onTextureLoadFailure(fileName, ex, new TextureData(fileName));
+            this.notifyTextureLoadFailure(pi, ex, new TextureData(pi));
         }
 
         return result;
     }
 
-    private onTextureLoadSuccess(fileName : string, data : TextureData )
+    private notifyTextureLoadSuccess(pathInfo : PathInfo, data : TextureData )
     {
-        console.log("Texture " + fileName +" loaded successfully!");
+        console.log("Texture " + pathInfo.fullPath +" loaded successfully!");
 
-        this.textureCache.set(fileName, data);
-        this.loadingFlags.set(fileName, false);
+        this.textureCache.set(pathInfo.fullPath, data);
         this.onLoadCompleted.trigger(data);
+        this.loadingFlags.set(pathInfo.fullPath, false);
     }
 
-    private onTextureLoadFailure(fileName : string, msg : string, data : TextureData)
+    private notifyTextureLoadFailure(pathInfo : PathInfo, msg : string, data : TextureData)
     {
-        console.log("Texture " + fileName +" load failed! \n" + msg);
+        console.log("Texture " + pathInfo.fullPath +" load failed! \n" + msg);
         this.onLoadCompleted.trigger(data);
+        this.loadingFlags.set(pathInfo.fullPath, false);
     }
 }

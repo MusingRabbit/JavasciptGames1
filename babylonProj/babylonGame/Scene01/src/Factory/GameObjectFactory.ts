@@ -91,11 +91,9 @@ export class GameObjectFactory
         let transform = new Transform();
         transform.position = position;
 
-        let name = "obj" + meshData.fileName.split('.')[0];
+        let result = this.CreateGameObject(meshData.name, transform);
 
-        let result = this.CreateGameObject(name, transform);
-
-        let rndCmp = this.componentFactory.CreateRenderComponent({name : name + "_mesh", shape : ShapeType.Sphere, transform : transform});
+        let rndCmp = this.componentFactory.CreateRenderComponent({name : meshData.name + "_mesh", shape : ShapeType.Sphere, transform : transform});
         let mat = rndCmp.GetMaterial();
 
         if (mat)

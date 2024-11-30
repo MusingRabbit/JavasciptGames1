@@ -14,6 +14,7 @@ export enum ShapeType
     Box,
     Sphere,
     Plane,
+    TiledPlane,
     Capsule,
 }
 
@@ -25,6 +26,11 @@ export class Component
 export class LightComponent extends Component
 {
     light : Light;
+
+    public GetLight<T>() : T
+    {
+        return <T>this.light;
+    }
 }
 
 export class RenderComponent extends Component 

@@ -1,4 +1,4 @@
-import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix } from "@babylonjs/core";
+import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix, Mesh } from "@babylonjs/core";
 import { Transform, RenderComponent, LightComponent, CameraComponent } from "../Components/component";
 import GameObject from "../GameObjects/gameObject";
 import { System } from "./System";
@@ -29,15 +29,16 @@ export class GameObjectSystem extends System {
     private updateComponents(gameObj: GameObject): void {
         for (let cmp of gameObj.components) {
             if (cmp instanceof RenderComponent) {
-                this.updateMeshTransforms(gameObj.GetLocalTransform(), cmp);
+                this.updateMeshTransforms(gameObj.GetWorldTransform(), cmp);
+                this.updateMaterialSettings(cmp);
             }
 
             if (cmp instanceof LightComponent) {
-                this.updateLightPosition(gameObj.GetLocalTransform(), cmp);
+                this.updateLightPosition(gameObj.GetWorldTransform(), cmp);
             }
 
             if (cmp instanceof CameraComponent) {
-                this.updateCameraPosition(gameObj.GetLocalTransform(), cmp);
+                this.updateCameraPosition(gameObj.GetWorldTransform(), cmp);
             }
         }
     }
@@ -72,5 +73,16 @@ export class GameObjectSystem extends System {
         cmp.mesh.position = transform.position;
         cmp.mesh.rotationQuaternion = transform.rotation;
         cmp.mesh.scaling = transform.scale;
+    }
+
+    private updateMaterialSettings(cmp : RenderComponent) : void {
+        let mat = cmp.GetMaterial();
+        
+        if (mat)
+        {
+            mat.backFaceCulling = true;
+            //mat.sideOrientation = Mesh.DEFAULTSIDE;
+        }
+
     }
 }

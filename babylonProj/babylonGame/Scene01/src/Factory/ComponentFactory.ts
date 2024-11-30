@@ -93,8 +93,12 @@ export class ComponentFactory
                     result.SetMesh(capsule);
                     break;
                 case ShapeType.Plane:
-                    let plane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", args.transform, true , args.tessalation);
+                    let plane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", args.transform, false);
                     result.SetMesh(plane);
+                    break;
+                case ShapeType.TiledPlane:
+                    let tilePlane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", args.transform, true , args.tessalation);
+                    result.SetMesh(tilePlane);
                     break;
                 case ShapeType.Sphere:
                     let sphere = this.sceneObjBuilder.CreateSphere(args.name + "_sphere", args.transform, args.tessalation);

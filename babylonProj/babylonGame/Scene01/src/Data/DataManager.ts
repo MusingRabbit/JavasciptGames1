@@ -3,6 +3,7 @@ import { MeshData, MeshRepository } from "./MeshRepository";
 import { TextureData, TextureRepository } from "./TextureRepository";
 import { it } from "node:test";
 import { LiteEvent } from "../Event/LiteEvent";
+import { FileHelper } from "../Util/File/FileHelper";
 
 
 class QueueData
@@ -40,13 +41,13 @@ export class DataManager
         
         this.scene = scene;
         this.meshRepo = new MeshRepository();
-        this.txrRepo = new TextureRepository(500);
+        this.txrRepo = new TextureRepository(5000);
 
         this.meshRepo.OnLoadCompleted.on((data) => {
             if (data)
             {
-                console.log("onLoadingCompleted : " + data.fileName);
-                let queueItem = this.meshFileQueue.get(data.fileName);
+                console.log("onLoadingCompleted : " + data.filePath);
+                let queueItem = this.meshFileQueue.get(data.filePath);
 
                 if (queueItem)
                 {
@@ -61,8 +62,8 @@ export class DataManager
         this.txrRepo.OnLoadCompleted.on((data) => {
             if (data)
             {
-                console.log("onLoadingCompleted : " + data.fileName);
-                let queueItem = this.txrFileQueue.get(data.fileName);
+                console.log("onLoadingCompleted : " + data.filePath);
+                let queueItem = this.txrFileQueue.get(data.filePath);
 
                 if (queueItem)
                 {
@@ -75,32 +76,34 @@ export class DataManager
         });
     }
 
-    public QueueLoadMeshes(fileNames : string[])
+    public QueueLoadMeshes(filePaths : string[])
     {
-        for (let fn of fileNames)
+        for (let path of filePaths)
         {
-            this.QueueLoadMesh(fn);
+            this.QueueLoadMesh(path);
         }
     }
 
-    public QueueLoadTextures(fileNames : string[])
+    public QueueLoadTextures(filePaths : string[])
     {
-        for (let fn of fileNames)
+        for (let path of filePaths)
         {
-            this.QueueLoadTexture(fn);
+            this.QueueLoadTexture(path);
         }
     }
 
-    public QueueLoadMesh(fileName : string)
+    public QueueLoadMesh(filePath : string)
     {
-        console.log("Adding " + fileName + " to load queue.");
-        this.meshFileQueue.set(fileName, new QueueData(fileName));
+        let pInfo = FileHelper.GetPathInfo(filePath);
+        console.log("Adding " + pInfo.fullPath + " to load queue.");
+        this.meshFileQueue.set(pInfo.fullPath, new QueueData(pInfo.fullPath));
     }
 
-    public QueueLoadTexture(fileName : string)
+    public QueueLoadTexture(filePath : string)
     {
-        console.log("Adding " + fileName + " to load queue.");
-        this.txrFileQueue.set(fileName, new QueueData(fileName));
+        let pInfo = FileHelper.GetPathInfo(filePath);
+        console.log("Adding " + pInfo.fullPath + " to load queue.");
+        this.txrFileQueue.set(pInfo.fullPath, new QueueData(pInfo.fullPath));
     }
 
     public Load()
@@ -169,6 +172,8 @@ export class DataManager
             
             this.txrFileQueue.clear();
             this.meshFileQueue.clear();
+
+            console.log("DataManager -> Load Complete!");
         }
     }
 }

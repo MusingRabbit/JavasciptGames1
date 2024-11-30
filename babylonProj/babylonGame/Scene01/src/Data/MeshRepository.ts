@@ -1,15 +1,19 @@
 import { AbstractMesh, Mesh, Nullable, Scene, SceneLoader } from "@babylonjs/core";
 import { LiteEvent } from "../Event/LiteEvent";
+import { FileHelper, PathInfo } from "../Util/File/FileHelper";
+
 
 
 export class MeshData
 {
-    fileName : string;
+    name : string;
+    filePath : string;
     objs : Map<string, Mesh>;
 
-    constructor(fileName : string)
+    constructor(pathInfo : PathInfo)
     {
-        this.fileName = fileName;
+        this.name = pathInfo.name;
+        this.filePath = pathInfo.fullPath;
         this.objs = new Map<string, Mesh>();
     }
 
@@ -38,37 +42,40 @@ export class MeshRepository
         this.cache.clear();
     }
 
-    public GetMeshData(fileName : string) : Nullable<MeshData>
+    public GetMeshData(filePath : string) : Nullable<MeshData>
     {
-        if (this.cache.has(fileName))
+        let pi = FileHelper.GetPathInfo(filePath);
+
+        if (this.cache.has(pi.fullPath))
         {
-            return this.cache.get(fileName) ?? null;
+            return this.cache.get(pi.fullPath) ?? null;
         }
 
         return null;
     }
 
-    public LoadMesh(fileName : string, scene : Scene) : void
+    public LoadMesh(filePath : string, scene : Scene) : void
     {
+        let pi = FileHelper.GetPathInfo(filePath);
+
         SceneLoader.ImportMesh("", 
-            this.modelDir, 
-            fileName, 
+            this.modelDir + pi.path, 
+            pi.fileName, 
             scene, 
-            (objs) => { this.onMeshLoadSuccess(fileName, objs) }, null, 
-            (scene, message, ex) => { this.onMeshLoadFailure(fileName, message); } );
+            (objs) => { this.onMeshLoadSuccess(pi, objs) }, null, 
+            (scene, message, ex) => { this.onMeshLoadFailure(pi, message); } );
     }
 
-    private onMeshLoadFailure(fileName : string, msg : string)
+    private onMeshLoadFailure(pathInfo : PathInfo, msg : string)
     {
-        console.log(fileName + " load failed : " + msg);
+        console.log(pathInfo.fullPath + " load failed : " + msg);
 
-        this.onLoadCompleted.trigger(new MeshData(fileName));
+        this.onLoadCompleted.trigger(new MeshData(pathInfo));
     }
 
-    private onMeshLoadSuccess(fileName : string, objs : AbstractMesh[])
+    private onMeshLoadSuccess(pathInfo : PathInfo, objs : AbstractMesh[])
     {
-        let data = new MeshData(fileName);
-        data.fileName = fileName;
+        let data = new MeshData(pathInfo);
 
         for (let obj of objs)
         {
@@ -77,9 +84,9 @@ export class MeshRepository
             data.Add(mesh);
         }
 
-        this.cache.set(fileName, data);
+        this.cache.set(pathInfo.fullPath, data);
         
-        console.log(fileName + " successfully loaded");
+        console.log(pathInfo.fullPath + " successfully loaded");
 
         this.onLoadCompleted.trigger(data);
     }

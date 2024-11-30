@@ -6,7 +6,7 @@ import GameObject from "../GameObjects/gameObject";
 class ShadowGeneratorArgs
 {
     light : IShadowLight;
-    shadowMapSize : number = 1024;
+    shadowMapSize : number = 2048;
     darkness : number = 0.2;
     useBlurExponentialShadowMap : boolean = true;
     blurScale : number = 2;
@@ -110,7 +110,7 @@ export class LightingSystem extends System
     private addMeshToShadowMap(mesh : Mesh, shadowGenerator : ShadowGenerator)
     {
         mesh.receiveShadows = true;
-        
+
         const sMap : any = shadowGenerator.getShadowMap();
 
         if (sMap?.renderList != null)
