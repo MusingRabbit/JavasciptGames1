@@ -2,26 +2,12 @@ import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix } from "@babyl
 import { Transform, RenderComponent, LightComponent, CameraComponent } from "../Components/component";
 import GameObject from "../GameObjects/gameObject";
 import { System } from "./System";
+import { LiteEvent } from "../Event/LiteEvent";
 
 export class GameObjectSystem extends System {
-
     constructor()
     {
         super();
-    }
-
-    public CreateGameObject(transform: Transform) : GameObject {
-        let result = new GameObject();
-        result.id = this.getUID(36);
-        result.transform = transform;
-
-        this.gameObjs.set(result.id, result);
-
-        return result;
-    }
-
-    public AddGameObject(gameObj : GameObject) : void {
-        this.gameObjs.set(gameObj.id, gameObj);
     }
 
     public Initialise() : void {
@@ -33,11 +19,7 @@ export class GameObjectSystem extends System {
         this.processGameObjects();
         super.Update();
     }
-
-    private getUID(length: number): string {
-        return Date.now().toString(length) + Math.random().toString(length).substring(2);
-    }
-
+    
     private processGameObjects(): void {
         for (let obj of this.gameObjs.values()) {
             this.updateComponents(obj);

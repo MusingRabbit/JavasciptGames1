@@ -1,18 +1,21 @@
 import { Engine, Color3, Quaternion, Vector2, Vector3 } from "@babylonjs/core";
 import Game from "./game";
-import SceneFactory from "./Factory/SceneFactory";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "./Components/component";
 import GameObject from "./GameObjects/gameObject";
-import { GameObjectFactory } from "./Factory/GameObjectFactory";
 import { MathHelper } from "./mathHelper";
+
+const TEMPLE_OBJ_FILENAME  = "ruined_temple01.obj";
 
 export class SimpleGame extends Game
 {
-    gameObj1 : GameObject;
+    //gameObj1 : GameObject;
     gameObj2 : GameObject;
+    templeObj : GameObject;
     ground : GameObject;
 
     counter : number;
+
+    
 
     constructor(engine : Engine) {
         super(engine);
@@ -22,8 +25,15 @@ export class SimpleGame extends Game
 
     public Initialise(): void {
         this.setupBasicScene();
-
         super.Initialise();
+    }
+
+    public Load() : void 
+    {
+        this.dataManager.QueueLoadMesh(TEMPLE_OBJ_FILENAME);
+        this.dataManager.QueueLoadTextures(["rock_wall_01.jpg", "stone_wall_01.jpg"]);
+
+        super.Load();
     }
 
     public Update(): void {
@@ -35,12 +45,12 @@ export class SimpleGame extends Game
         this.counter = this.counter + 1 * dt;
         //console.log(dt);
 
-        let rot = Quaternion.FromEulerAngles(x,y,x);
+        //let rot = Quaternion.FromEulerAngles(x,y,x);
         //this.gameObj1.transform.rotation = rot;
         //this.gameObj1.transform.position = new Vector3(x, y, x);
 
         
-        this.gameObj2.transform.position = new Vector3(x,y,x);
+        this.gameObj2.transform.position = new Vector3(y, this.gameObj2.transform.position.y, y);
         
 
         //console.log(this.ground.transform.rotation);
@@ -51,29 +61,44 @@ export class SimpleGame extends Game
     }
 
     public Render(): void {
-
-
         super.Render();
+    }
+
+    private createTemple()
+    {
+        let meshData = this.dataManager.GetMesh(TEMPLE_OBJ_FILENAME);
+
+        if (meshData)
+        {
+            this.templeObj = this.objFactory.CreateMeshGameObject(new Vector3(0,0,0), meshData);
+        }
     }
 
     private setupBasicScene() : void 
     {
-        this.gameObj1 = this.objFactory.CreateShapeGameObject(new Vector3(0,-1.5,0), ShapeType.Box);
-        this.gameObj2 = this.objFactory.CreateLightGameObject(Vector3.Zero(), LightType.Directional);
+        this.createTemple();
 
-        let rotX = MathHelper.DegToRad(-10);
-        let rotY = MathHelper.DegToRad(-10);
-
-        this.gameObj2.transform.rotation = Quaternion.FromEulerAngles(rotX, rotY,0);
+        this.ground = this.objFactory.CreateShapeGameObject(new Vector3(0,0,0), ShapeType.Plane);
+        //this.gameObj1 = this.objFactory.CreateShapeGameObject(new Vector3(0,0.5,0), ShapeType.Box);
+        this.gameObj2 = this.objFactory.CreateLightGameObject(new Vector3(0,4,0), Color3.White(), LightType.Point);
 
         let cmp = this.gameObj2.GetComponent(LightComponent);
         cmp.light.intensity = 0.5;
+        //cmp.light.radius = 3;
 
-        this.ground = this.objFactory.CreateShapeGameObject(new Vector3(0,-2,0), ShapeType.Plane);
         
         this.ground.transform.rotation = Quaternion.FromEulerAngles(MathHelper.DegToRad(90),0,0);
         this.ground.transform.scale = new Vector3(10,10,10);
 
-        this.sceneFactory.CreateArcRotateCamera("camera", true);
+        let stoneTxr = this.dataManager.GetTexture("stone_wall_01.jpg");
+        let rockTxr = this.dataManager.GetTexture("rock_wall_01.jpg");
+
+        let grc = this.ground.GetComponent(RenderComponent);
+        grc.SetTextureData(rockTxr);
+
+        //let brc = this.gameObj1.GetComponent(RenderComponent);
+        //brc.SetTextureData(rockTxr);
+
+        this.sceneBuilder.CreateArcRotateCamera("camera", true);
     }
 }

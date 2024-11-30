@@ -1,6 +1,7 @@
 import { Color3, Material, Matrix, Mesh, Scene, Texture, Vector3 } from "@babylonjs/core";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "../Components/component";
-import SceneFactory from "./SceneFactory";
+import SceneObjectBuilder from "./SceneObjectBuilder";
+import { TextureData } from "../Data/TextureRepository";
 
 
 export class CreateCameraComponentArgs
@@ -15,8 +16,9 @@ export class CreateRenderComponentArgs
     transform : Transform;
     mesh? : Mesh;
     material? : Material;
-    texture? : Texture;
-    shape : ShapeType
+    txrData? : TextureData;
+    shape : ShapeType;
+    tessalation? : number = 8;
 
     constructor()
     {
@@ -34,8 +36,11 @@ export class CreateLightComponentArgs
     type : LightType;
     colour : Color3;
     intensity? : number;
+    radius? : number;
     angle? : number;
-
+    range? : number;
+    exponent?:number;
+    
     constructor()
     {
         this.name = "component";
@@ -44,6 +49,8 @@ export class CreateLightComponentArgs
         this.colour = Color3.White();
         this.intensity = 1.0;
         this.angle = 45;
+        this.range = 10;
+        this.exponent = 5;
     }
 }
 
@@ -51,12 +58,12 @@ export class CreateLightComponentArgs
 export class ComponentFactory
 {
     scene : Scene;
-    sceneFactory : SceneFactory
+    sceneObjBuilder : SceneObjectBuilder
 
     constructor(scene : Scene)
     {
         this.scene = scene;
-        this.sceneFactory = new SceneFactory(this.scene);
+        this.sceneObjBuilder = new SceneObjectBuilder(this.scene);
     }
 
     public CreateCameraComponent(args : CreateCameraComponentArgs)
@@ -70,6 +77,7 @@ export class ComponentFactory
 
         if (args.mesh)
         {
+            this.scene.addMesh(args.mesh, true);
             result.SetMesh(args.mesh);
         }
         else
@@ -77,19 +85,19 @@ export class ComponentFactory
             switch(args.shape)
             {
                 case ShapeType.Box:
-                    let box = this.sceneFactory.CreateBox(args.name + "_box", args.transform);
+                    let box = this.sceneObjBuilder.CreateBox(args.name + "_box", args.transform);
                     result.SetMesh(box);
                     break;
                 case ShapeType.Capsule:
-                    let capsule = this.sceneFactory.CreateCapsule(args.name + "_captsule", args.transform);
+                    let capsule = this.sceneObjBuilder.CreateCapsule(args.name + "_captsule", args.transform);
                     result.SetMesh(capsule);
                     break;
                 case ShapeType.Plane:
-                    let plane = this.sceneFactory.CreatePlane(args.name + "_plane", args.transform);
+                    let plane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", args.transform, true , args.tessalation);
                     result.SetMesh(plane);
                     break;
                 case ShapeType.Sphere:
-                    let sphere = this.sceneFactory.CreateSphere(args.name + "_sphere", args.transform, 64);
+                    let sphere = this.sceneObjBuilder.CreateSphere(args.name + "_sphere", args.transform, args.tessalation);
                     result.SetMesh(sphere);
                     break;
             }
@@ -100,9 +108,9 @@ export class ComponentFactory
             result.SetMaterial(args.material);
         }
 
-        if (args.texture)
+        if (args.txrData)
         {
-            result.SetTexture(args.texture);
+            result.SetTextureData(args.txrData);
         }
 
         return result;
@@ -120,17 +128,32 @@ export class ComponentFactory
         switch(args.type)
         {
             case LightType.Hemispheric:
-                result.light = this.sceneFactory.CreateHemisphericLight(args.name, dir, args.colour, args.intensity);
+                result.light = this.sceneObjBuilder.CreateHemisphericLight(args.name, dir, args.colour);
                 break;
             case LightType.Spot:
-                result.light = this.sceneFactory.CreateSpotLight(args.name, args.transform.position, dir, args.colour, args.angle ?? 45 , args.intensity)
+                result.light = this.sceneObjBuilder.CreateSpotLight(args.name, args.transform.position, dir, args.colour, args.angle ?? 45, args.exponent);
                 break;
             case LightType.Directional:
-                result.light = this.sceneFactory.CreateDirectionalLight(args.name, args.transform.position, dir, args.colour, args.intensity);
+                result.light = this.sceneObjBuilder.CreateDirectionalLight(args.name, args.transform.position, dir, args.colour);
                 break;
             case LightType.Point:
-                result.light = this.sceneFactory.CreatePointLight(args.name, args.transform.position, args.colour, args.intensity);
+                result.light = this.sceneObjBuilder.CreatePointLight(args.name, args.transform.position, args.colour);
                 break;
+        }
+
+        if (args.radius)
+        {
+            result.light.radius = args.radius;
+        }
+
+        if (args.intensity)
+        {
+            result.light.intensity = args.intensity;
+        }
+
+        if (args.range)
+        {
+            result.light.range = args.range;
         }
 
         return result;

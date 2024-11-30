@@ -16,5 +16,16 @@ export class System
     public Update() : void
     {
     }
+
+    public AddGameObject(gameObj : GameObject) : boolean
+    {
+        if (this.gameObjs.has(gameObj.id))
+        {
+            return false;
+        }
+
+        this.gameObjs.set(gameObj.id, gameObj);
+        return true;
+    }
     
 }

@@ -30,6 +30,6 @@ export default class GameObject
             }
         }
 
-        throw "Type not found";
+        return <T>new Component();
     }
 }

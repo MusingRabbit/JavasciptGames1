@@ -1,6 +1,5 @@
 import { Engine, Scene } from "@babylonjs/core";
 import './main.css';
-import SceneController from "./SceneFactory";
 import { SimpleGame } from "./simpleGame";
 
 const CanvasName = "renderCanvas";
@@ -15,5 +14,7 @@ let eng = new Engine(canvas, true, {}, true);
 let game = new SimpleGame(eng);
 
 game.Initialise();
+
+game.Run();
 
 game.ShowDebugLayer();

@@ -1,4 +1,5 @@
 import { Camera, Light, Material, Mesh, Nullable, Quaternion, StandardMaterial, Texture, Vector3 } from "@babylonjs/core";
+import { TextureData } from "../Data/TextureRepository";
 
 export enum LightType
 {
@@ -42,9 +43,9 @@ export class RenderComponent extends Component
         this.mesh = mesh;
     }
 
-    public GetMaterial() : Nullable<Material>
+    public GetMaterial<T extends Material>() : Nullable<T>
     {
-        return this.mesh.material;
+        return <T>this.mesh.material;
     }
 
     public SetMaterial(material : Material)
@@ -62,7 +63,7 @@ export class RenderComponent extends Component
         return this.texture;
     }
 
-    public SetTexture(texture : Texture)
+    public SetTextureData(data : TextureData)
     {
         let material = this.GetMaterial();
 
@@ -73,7 +74,9 @@ export class RenderComponent extends Component
 
         if (material instanceof StandardMaterial)
         {
-            material.ambientTexture = texture;
+            material.ambientTexture = data.texture;
+            material.bumpTexture = data.normal;
+            material.diffuseTexture = data.diffuse;
         }
     }
 }
