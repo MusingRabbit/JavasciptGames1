@@ -159,13 +159,14 @@ export class DataManager
         
         if (result)
         {
+            this.isLoading = false;
+
             if (!this.onLoadTriggered)
             {
                 this.onLoadCompleted.trigger();
                 this.onLoadTriggered = true;
             }
             
-            this.isLoading = false;
             this.txrFileQueue.clear();
             this.meshFileQueue.clear();
         }

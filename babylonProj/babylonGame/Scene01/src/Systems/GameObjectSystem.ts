@@ -29,15 +29,15 @@ export class GameObjectSystem extends System {
     private updateComponents(gameObj: GameObject): void {
         for (let cmp of gameObj.components) {
             if (cmp instanceof RenderComponent) {
-                this.updateMeshTransforms(gameObj.transform, cmp);
+                this.updateMeshTransforms(gameObj.GetLocalTransform(), cmp);
             }
 
             if (cmp instanceof LightComponent) {
-                this.updateLightPosition(gameObj.transform, cmp);
+                this.updateLightPosition(gameObj.GetLocalTransform(), cmp);
             }
 
             if (cmp instanceof CameraComponent) {
-                this.updateCameraPosition(gameObj.transform, cmp);
+                this.updateCameraPosition(gameObj.GetLocalTransform(), cmp);
             }
         }
     }

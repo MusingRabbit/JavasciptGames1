@@ -1,4 +1,4 @@
-import {Component, Transform} from "../Components/component";
+import {Component, RenderComponent, Transform} from "../Components/component";
 
 export default class GameObject
 {
@@ -7,9 +7,25 @@ export default class GameObject
     transform : Transform;
     components : Component[];
 
+    parent : GameObject;
+    children : GameObject[];
+
     constructor()
     {
         this.components = [];
+        this.children = [];
+    }
+
+    public AddChild(gameObj : GameObject)
+    {
+        this.children.push(gameObj);
+
+        let rnd = gameObj.GetComponent(RenderComponent);
+        let pRnd = this.GetComponent(RenderComponent);
+
+        rnd.mesh.setParent(pRnd.mesh);
+
+        gameObj.parent = this;
     }
 
     public AddComponent<T extends Component>(arg : T)
@@ -31,5 +47,34 @@ export default class GameObject
         }
 
         return <T>new Component();
+    }
+
+    public GetLocalTransform()
+    {
+        return this.transform;
+    }
+
+    public GetWorldTransform() : Transform
+    {
+        let result = new Transform();
+
+        result.position = this.transform.position;
+        result.rotation = this.transform.rotation;
+        result.scale = this.transform.scale;
+
+        var currObj = <GameObject>this.parent;
+
+        if (currObj)
+        {
+            while (currObj)
+            {
+                result.position = result.position.add(currObj.transform.position);
+                result.rotation = result.rotation.add(currObj.transform.rotation);
+                result.scale = currObj.transform.scale;
+                currObj = currObj.parent;
+            }
+        }
+
+        return result;
     }
 }

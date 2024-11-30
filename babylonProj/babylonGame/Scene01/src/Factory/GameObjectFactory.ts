@@ -27,11 +27,12 @@ export class GameObjectFactory
         this.scene = scene;
     }
 
-    public CreateGameObject(trans : Transform) : GameObject
+    public CreateGameObject(name : string, trans : Transform) : GameObject
     {
         let result = new GameObject();
         result.id = this.getUID(36);
         result.transform = trans;
+        result.name = name;
 
         return result;
     }
@@ -46,9 +47,11 @@ export class GameObjectFactory
         transform.position = position;
         transform.scale = new Vector3(0.5,0.5,0.5);
 
-        let result = this.CreateGameObject(transform);
+        let name = "obj" + LightType[type];
 
-        let rndCmp = this.componentFactory.CreateRenderComponent({name : "simpleLightMesh", shape : ShapeType.Sphere, transform : transform});
+        let result = this.CreateGameObject(name ,transform);
+
+        let rndCmp = this.componentFactory.CreateRenderComponent({name : name + "_mesh", shape : ShapeType.Sphere, transform : transform});
         let mat = rndCmp.GetMaterial<StandardMaterial>();
 
         rndCmp.mesh.receiveShadows = false;
@@ -63,7 +66,7 @@ export class GameObjectFactory
 
         let lightArgs = 
         {
-            name : "simpleLight", 
+            name : name + "_light", 
             type : type, 
             transform : transform, 
             colour : colour, 
@@ -83,21 +86,52 @@ export class GameObjectFactory
         return result;
     }
 
-    public CreateMeshGameObject(position : Vector3, mesh: MeshData) : GameObject
+    public CreateMeshGameObjects(position : Vector3, meshData : MeshData) : GameObject
     {
         let transform = new Transform();
         transform.position = position;
 
-        let result = this.CreateGameObject(transform);
+        let name = "obj" + meshData.fileName.split('.')[0];
+
+        let result = this.CreateGameObject(name, transform);
+
+        let rndCmp = this.componentFactory.CreateRenderComponent({name : name + "_mesh", shape : ShapeType.Sphere, transform : transform});
+        let mat = rndCmp.GetMaterial();
+
+        if (mat)
+        {
+            mat.alpha = 0.0;
+        }
+
+        result.AddComponent(rndCmp);
+
+        for(let mesh of meshData.objs.values())
+        {
+            result.AddChild(this.CreateMeshGameObject(Vector3.Zero(), mesh));
+        }
+
+        return result;
+    }
+
+    public CreateMeshGameObject(position : Vector3, mesh: Mesh) : GameObject
+    {
+        let transform = new Transform();
+        transform.position = position.add(mesh.position);
+
+        let name = "obj" + mesh.name.split('.')[0];
+
+        let result = this.CreateGameObject(name, transform);
 
         let args = new CreateRenderComponentArgs();
         args.name = "cmp";
         args.transform = transform;
-        args.mesh = mesh[0];
+        args.mesh = mesh;
 
         let renderCmp = this.componentFactory.CreateRenderComponent(args);
 
         result.components.push(renderCmp);
+
+        this.onGameObjectCreated.trigger(result);
 
         return result;
     }
@@ -108,12 +142,12 @@ export class GameObjectFactory
         let transform = new Transform();
         transform.position = position;
 
-        let result = this.CreateGameObject(transform);
+        let name =  "obj" + ShapeType[shape];
 
-        result.name = "gamObj" + ShapeType[shape];
+        let result = this.CreateGameObject(name, transform);
 
         let args = new CreateRenderComponentArgs();
-        args.name = "cmp"
+        args.name = "cmp";
         args.transform = transform;
         args.shape = shape;
 

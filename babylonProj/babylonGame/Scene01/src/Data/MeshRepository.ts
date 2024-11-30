@@ -15,7 +15,7 @@ export class MeshData
 
     public Add(mesh : Mesh)
     {
-        this.objs[mesh.name] = mesh;
+        this.objs.set(mesh.name, mesh);
     }
 }
 
@@ -42,7 +42,7 @@ export class MeshRepository
     {
         if (this.cache.has(fileName))
         {
-            return this.cache[fileName];
+            return this.cache.get(fileName) ?? null;
         }
 
         return null;
@@ -72,10 +72,12 @@ export class MeshRepository
 
         for (let obj of objs)
         {
-            data.Add(obj as Mesh);
+            let mesh = obj as Mesh;
+            mesh.bakeCurrentTransformIntoVertices();
+            data.Add(mesh);
         }
 
-        this.cache[fileName] = data;
+        this.cache.set(fileName, data);
         
         console.log(fileName + " successfully loaded");
 

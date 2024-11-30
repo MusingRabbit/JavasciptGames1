@@ -18,7 +18,8 @@ export class TextureRepository
     textureCache : Map<string, TextureData>;
     txrDir : string;
 
-    loadTimeout : number = 500;
+    loadTimeout : number = 2000;
+    loadingFlags : Map<string, boolean>;
 
     private readonly onLoadCompleted = new LiteEvent<TextureData>();
 
@@ -26,6 +27,7 @@ export class TextureRepository
 
     constructor(loadTimeout : number)
     {
+        this.loadingFlags = new Map<string, boolean>();
         this.textureCache = new Map<string, TextureData>();
         this.txrDir = "assets/textures/";
         this.loadTimeout = loadTimeout;
@@ -38,6 +40,7 @@ export class TextureRepository
 
     public GetTexture(fileName : string) : TextureData
     {
+        this.loadingFlags.set(fileName, true);
         let result = this.textureCache.get(fileName);
 
         if (result)
@@ -64,12 +67,12 @@ export class TextureRepository
             });
 
             setTimeout(() => {
-                this.onTextureLoadSuccess(fileName, new TextureData(fileName));
+                if (this.loadingFlags.get(fileName))
+                {
+                    this.onTextureLoadFailure(fileName, "load timeout" ,new TextureData(fileName));
+                }
+
             }, this.loadTimeout);
-
-
-            
-            this.textureCache.set(fileName, result);
         }
         catch (ex)
         {
@@ -82,6 +85,9 @@ export class TextureRepository
     private onTextureLoadSuccess(fileName : string, data : TextureData )
     {
         console.log("Texture " + fileName +" loaded successfully!");
+
+        this.textureCache.set(fileName, data);
+        this.loadingFlags.set(fileName, false);
         this.onLoadCompleted.trigger(data);
     }
 

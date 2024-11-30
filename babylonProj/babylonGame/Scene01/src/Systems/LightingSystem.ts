@@ -50,6 +50,12 @@ export class LightingSystem extends System
         {
             this.processGameObject(gameObj);
             this.updateShadowMap();
+
+            for (let obj of gameObj.children)
+            {
+                this.AddGameObject(obj);
+            }
+
             return true;
         }
         
@@ -103,15 +109,17 @@ export class LightingSystem extends System
 
     private addMeshToShadowMap(mesh : Mesh, shadowGenerator : ShadowGenerator)
     {
+        mesh.receiveShadows = true;
+        
         const sMap : any = shadowGenerator.getShadowMap();
 
         if (sMap?.renderList != null)
         {
-            if (mesh.receiveShadows)
-            {
-                sMap.renderList.push(mesh);
-                shadowGenerator.addShadowCaster(mesh, true);
-            }
+            sMap.renderList.push(mesh);
+
+            //console.log("Adding shadow caster " + mesh.name);
+
+            shadowGenerator.addShadowCaster(mesh, true);
         }
     }
 }

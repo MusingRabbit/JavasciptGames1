@@ -25,6 +25,7 @@ export default class Game
     currTime : number;
 
     isRunning : boolean;
+    isInitialised :boolean;
 
     constructor(engine : Engine)
     {
@@ -49,50 +50,56 @@ export default class Game
          this.Load();
     }
 
-    public Initialise() : void
+    public Initialise() : boolean
     {
+        this.isInitialised = false;
+
+        if (this.dataManager.isLoading)             
+        {
+            this.dataManager.OnLoadCompleted.on(() => {
+                this.Initialise();
+            });
+
+            return false;
+        }
+
         console.log("game initialising");
 
         this.lightingSys.Initialise();
         this.gameObjSys.Initialise();
-        
-        //this.engine.runRenderLoop(() => {
-        //    this.Update();
-        //});
-//
-        //this.engine.runRenderLoop(() => {
-        //    this.Render();
-        //});
 
+        this.isInitialised = true;
+        return this.isInitialised;
     }
 
-    public async Run() 
+    public Run() : boolean
     {
-        if (this.dataManager.isLoading)             
+        if (this.isInitialised)
         {
-            this.dataManager.OnLoadCompleted.on(() => {
-                this.Run();
-            });
-
-            return;
-        }
-
-        console.log("Running Game");
-        this.isRunning = true;
-
-        try 
-        {
-            while (this.isRunning)
+            console.log("Running Game");
+            this.isRunning = true;
+    
+            try 
             {
-                this.Update();
-                this.Render();
+                this.engine.runRenderLoop(() => {
+                    let dt = this.engine.getDeltaTime() * 0.001;
+                    this.Update(dt);
+                    this.Render(dt);
+                });
+            }
+            catch(ex)
+            {
+                console.log(ex);
+                this.Stop();
             }
         }
-        catch(ex)
+        else 
         {
-            console.log(ex);
-            this.Stop();
+            console.log("Run() -> Initialisation not yet complete.");
+            setTimeout(() => this.Run(), 10);
         }
+
+        return this.isRunning;
     }
 
     private Stop()
@@ -107,12 +114,12 @@ export default class Game
         this.dataManager.Load();
     }
 
-    public Update() : void
+    public Update(dt : number) : void
     {
         this.gameObjSys.Update();
     }
 
-    public Render() : void
+    public Render(dt : number) : void
     {
         this.scene.render();
     }
@@ -128,6 +135,7 @@ export default class Game
 
     public AddGameObject(gameObj : GameObject)
     {
+        console.log("AddGameObject : " + gameObj.name + "(" + gameObj.id + ")");
         this.gameObjSys.AddGameObject(gameObj);
         this.lightingSys.AddGameObject(gameObj);
     }

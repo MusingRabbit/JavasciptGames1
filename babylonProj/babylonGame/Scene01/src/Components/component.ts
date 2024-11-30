@@ -41,6 +41,11 @@ export class RenderComponent extends Component
         }
 
         this.mesh = mesh;
+
+        if (this.mesh.material)
+        {
+            this.SetMaterial(this.mesh.material);
+        }
     }
 
     public GetMaterial<T extends Material>() : Nullable<T>
