@@ -1,4 +1,4 @@
-import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix, Mesh } from "@babylonjs/core";
+import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix, Mesh, Material } from "@babylonjs/core";
 import { Transform, RenderComponent, LightComponent, CameraComponent } from "../Components/component";
 import GameObject from "../GameObjects/gameObject";
 import { System } from "./System";
@@ -33,9 +33,9 @@ export class GameObjectSystem extends System {
                 this.updateMaterialSettings(cmp);
             }
 
-            if (cmp instanceof LightComponent) {
-                this.updateLightPosition(gameObj.GetWorldTransform(), cmp);
-            }
+            //if (cmp instanceof LightComponent) {
+            //    this.updateLightPosition(gameObj.GetWorldTransform(), cmp);
+            //}
 
             if (cmp instanceof CameraComponent) {
                 this.updateCameraPosition(gameObj.GetWorldTransform(), cmp);
@@ -80,7 +80,7 @@ export class GameObjectSystem extends System {
         
         if (mat)
         {
-            mat.backFaceCulling = true;
+            mat.sideOrientation = Material.LineLoopDrawMode;
             //mat.sideOrientation = Mesh.DEFAULTSIDE;
         }
 

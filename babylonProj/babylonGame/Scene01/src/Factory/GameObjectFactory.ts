@@ -78,8 +78,9 @@ export class GameObjectFactory
 
         let lightCmp = this.componentFactory.CreateLightComponent(lightArgs);
 
-        result.AddComponent(lightCmp);
         result.AddComponent(rndCmp);
+        result.AddComponent(lightCmp);
+        
 
         this.onGameObjectCreated.trigger(result);
 

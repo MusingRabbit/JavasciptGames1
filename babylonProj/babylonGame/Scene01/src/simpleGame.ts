@@ -1,11 +1,11 @@
-import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera } from "@babylonjs/core";
+import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix } from "@babylonjs/core";
 import Game from "./game";
 import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "./Components/component";
 import GameObject from "./GameObjects/gameObject";
 import { MathHelper } from "./mathHelper";
 import { QuaternionHelper } from "./Util/Math/QuaternionHelper";
 
-const TEMPLE_OBJ_FILEPATH  = "templeRuins/ruined_temple01.obj";
+const TEMPLE_OBJ_FILEPATH  = "ruinedTemple.obj";
 
 export class SimpleGame extends Game
 {
@@ -66,15 +66,13 @@ export class SimpleGame extends Game
         this.light2.transform.position = new Vector3(x2 * 300, this.light2.transform.position.y, y2 * 300);
         this.light3.transform.position = new Vector3(x3 * 300, this.light3.transform.position.y, y3 * 300);
 
-        let detlaV1 = this.light1.transform.position.subtract(new Vector3(0,0,0));
-        let detlaV2 = this.light2.transform.position.subtract(new Vector3(0,0,0));
-        let detlaV3 = this.light3.transform.position.subtract(new Vector3(0,0,0));
+        let mtxLookAt1 = Matrix.LookAtLH(this.light1.transform.position, Vector3.Zero(), Vector3.Up());
+        let mtxLookAt2 = Matrix.LookAtLH(this.light2.transform.position, Vector3.Zero(), Vector3.Up());
+        let mtxLookAt3 = Matrix.LookAtLH(this.light3.transform.position, Vector3.Zero(), Vector3.Up());
 
-        this.light1.transform.rotation = QuaternionHelper.QuaternionLookRotation(detlaV1.normalize(), Vector3.Up());
-        this.light2.transform.rotation = QuaternionHelper.QuaternionLookRotation(detlaV2.normalize(), Vector3.Up());
-        this.light3.transform.rotation = QuaternionHelper.QuaternionLookRotation(detlaV3.normalize(), Vector3.Up());
-        
-        //this.templeObj.transform.rotation = rot;
+        this.light1.transform.rotation = Quaternion.FromRotationMatrix(mtxLookAt1.invert());
+        this.light2.transform.rotation = Quaternion.FromRotationMatrix(mtxLookAt2.invert());
+        this.light3.transform.rotation = Quaternion.FromRotationMatrix(mtxLookAt3.invert());
 
         //console.log(this.ground.transform.rotation);
 

@@ -1,4 +1,5 @@
-import {Component, RenderComponent, Transform} from "../Components/component";
+import { Light } from "@babylonjs/core";
+import {Component, LightComponent, RenderComponent, Transform} from "../Components/component";
 
 export default class GameObject
 {
@@ -20,10 +21,17 @@ export default class GameObject
     {
         this.children.push(gameObj);
 
+        let lgt = gameObj.GetComponent(LightComponent);
         let rnd = gameObj.GetComponent(RenderComponent);
         let pRnd = this.GetComponent(RenderComponent);
 
         rnd.mesh.setParent(pRnd.mesh);
+
+        if (lgt?.light)
+        {
+            lgt.light.parent = rnd.mesh;
+            lgt.light.setEnabled(true);
+        }
 
         gameObj.parent = this;
     }
@@ -31,6 +39,18 @@ export default class GameObject
     public AddComponent<T extends Component>(arg : T)
     {
         this.components.push(arg);
+        this.updateParentRelationships();
+    }
+
+    private updateParentRelationships()
+    {
+        let rnd = this.GetComponent(RenderComponent);
+        let lgt = this.GetComponent(LightComponent);
+
+        if (rnd?.mesh && lgt?.light)
+        {
+            lgt.light.parent = rnd.mesh;
+        }
     }
 
     //I have no idea if this is how you handle generics in typescript.

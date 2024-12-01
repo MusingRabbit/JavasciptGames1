@@ -132,13 +132,13 @@ export class ComponentFactory
         switch(args.type)
         {
             case LightType.Hemispheric:
-                result.light = this.sceneObjBuilder.CreateHemisphericLight(args.name, dir, args.colour);
+                result.light = this.sceneObjBuilder.CreateHemisphericLight(args.name, Vector3.Zero(), args.colour);
                 break;
             case LightType.Spot:
-                result.light = this.sceneObjBuilder.CreateSpotLight(args.name, args.transform.position, dir, args.colour, args.angle ?? 45, args.exponent);
+                result.light = this.sceneObjBuilder.CreateSpotLight(args.name, args.transform.position, Vector3.Zero(), args.colour, args.angle ?? 45, args.exponent);
                 break;
             case LightType.Directional:
-                result.light = this.sceneObjBuilder.CreateDirectionalLight(args.name, args.transform.position, dir, args.colour);
+                result.light = this.sceneObjBuilder.CreateDirectionalLight(args.name, args.transform.position, Vector3.Zero(), args.colour);
                 break;
             case LightType.Point:
                 result.light = this.sceneObjBuilder.CreatePointLight(args.name, args.transform.position, args.colour);
