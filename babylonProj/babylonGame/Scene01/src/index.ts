@@ -1,7 +1,7 @@
-import { Engine, Scene } from "@babylonjs/core";
 import './main.css';
+
+import { Engine } from "@babylonjs/core";
 import { SimpleGame } from "./simpleGame";
-import Game from "./game";
 
 const CanvasName = "renderCanvas";
 

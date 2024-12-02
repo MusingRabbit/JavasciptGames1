@@ -1,5 +1,5 @@
-import { Scene, Vector3, Color3, HemisphericLight, PointLight, DirectionalLight, SpotLight, Mesh, MeshBuilder, StandardMaterial, Vector2, Texture, IShadowLight, ShadowGenerator, ArcRotateCamera, Quaternion, Nullable, FreeCamera } from "@babylonjs/core";
-import { Transform } from "../Components/component";
+import { Scene, Vector3, Color3, HemisphericLight, PointLight, DirectionalLight, SpotLight, Mesh, MeshBuilder, StandardMaterial, Vector2, Texture, IShadowLight, ShadowGenerator, ArcRotateCamera, Quaternion, Nullable, FreeCamera, Material, MultiMaterial, SubMesh } from "@babylonjs/core";
+import { Transform } from "../Components/Transform";
 
 export default class SceneObjectBuilder {
   scene: Scene;
@@ -81,9 +81,38 @@ export default class SceneObjectBuilder {
     return result;
   }
 
+  private createMultiMaterial(name : string, size : number) : MultiMaterial
+  {
+    let result = new MultiMaterial(name, this.scene);
+
+    for (var i = 0; i < size; i++)
+    {
+      result.subMaterials.push(this.createDefaultMaterial(name + i));
+    }
+    
+
+    return result;
+  }
+
+  private createTiledSubmesh(mesh : Mesh, w : number, h : number)
+  {
+    const verticesCount = mesh.getTotalVertices();
+    const tileIndicesLength = mesh.getIndices()?.length ?? 1 / (w * h);
+
+    let base = 0;
+    for (let row = 0; row < h; row++) {
+        for (let col = 0; col < w; col++) {
+            mesh.subMeshes.push(new SubMesh(row%2 ^ col%2, 0, verticesCount, base , tileIndicesLength, mesh));
+            base += tileIndicesLength;
+        }
+    }
+  }
+
+
   private createDefaultMaterial(name: string) {
     let result = new StandardMaterial(name, this.scene);
     result.backFaceCulling = true;
+    result.sideOrientation = Material.CounterClockWiseSideOrientation;
     result.maxSimultaneousLights = 6;
     result.ambientColor = Color3.White();
     result.emissiveColor = Color3.White();
@@ -91,12 +120,14 @@ export default class SceneObjectBuilder {
     return result;
   }
 
-  public CreateGround(name: string, transform : Transform) {
-    let result = MeshBuilder.CreateGround(name, { width: transform.scale.x, height: transform.scale.y }, this.scene);
+  public CreateGround(name: string, transform : Transform, tessalate : number = 8) {
+
+    let grid = {h : tessalate, w : tessalate};
+    let result = MeshBuilder.CreateTiledGround(name, { xmin: -3, zmin: -3, xmax: 3, zmax: 3, subdivisions : grid}, this.scene);
     result.position = transform.position;
     result.receiveShadows = true;
-    result.material = this.createDefaultMaterial("mat_" + name);
-
+    result.material = this.createMultiMaterial("mat_" + name, tessalate);
+    this.createTiledSubmesh(result, grid.w, grid.h);
     return result;
   }
 
@@ -106,17 +137,17 @@ export default class SceneObjectBuilder {
     return result;
   }
 
+
   public CreatePlane(name: string, transform : Transform, tiled : boolean, tessalate : number = 8) {
     let result : Nullable<Mesh> = null;
 
     if (tiled)
     {
-      let tileSize = (transform.GetSize() / tessalate) * 1.5;
-      result = MeshBuilder.CreateTiledPlane(name, { tileSize : tileSize, sideOrientation: Mesh.DOUBLESIDE }, this.scene);
+      result = MeshBuilder.CreateTiledPlane(name, { size : transform.GetSize(), sideOrientation: Mesh.FRONTSIDE, pattern : Mesh.FLIP_TILE }, this.scene);
     }
     else 
     {
-      result = MeshBuilder.CreatePlane(name, { sideOrientation: Mesh.DOUBLESIDE }, this.scene);
+      result = MeshBuilder.CreatePlane(name, { sideOrientation: Mesh.FRONTSIDE }, this.scene);
     }
 
     if (tessalate > 0)
@@ -173,4 +204,5 @@ export default class SceneObjectBuilder {
 
     return result;
   }
-}
+}  
+

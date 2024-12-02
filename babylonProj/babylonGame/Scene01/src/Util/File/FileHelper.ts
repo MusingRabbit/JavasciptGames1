@@ -24,7 +24,6 @@ export class PathInfo
     }
 }
 
-
 export class FileHelper
 {
     public static GetPathInfo(filePath : string) : PathInfo
@@ -42,4 +41,3 @@ export class FileHelper
         return new PathInfo(path, fileName);
     }
 }
-

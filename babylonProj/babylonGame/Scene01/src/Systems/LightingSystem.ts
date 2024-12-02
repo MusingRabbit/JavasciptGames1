@@ -1,12 +1,13 @@
 import { IShadowLight, Mesh, ShadowGenerator, ShadowLight } from "@babylonjs/core";
 import { System } from "./System";
-import { LightComponent, RenderComponent } from "../Components/component";
-import GameObject from "../GameObjects/gameObject";
+import { GameObject } from "../GameObjects/gameObject";
+import { RenderComponent } from "../Components/RenderComponent";
+import { LightComponent } from "../Components/LightComponent";
 
 class ShadowGeneratorArgs
 {
     light : IShadowLight;
-    shadowMapSize : number = 2048;
+    shadowMapSize : number = 4096;
     darkness : number = 0.2;
     useBlurExponentialShadowMap : boolean = true;
     blurScale : number = 2;
@@ -66,6 +67,11 @@ export class LightingSystem extends System
     {
         let rndCmp = gameObj.GetComponent(RenderComponent);
         let lightCmp = gameObj.GetComponent(LightComponent);
+
+        if (rndCmp.ignoreLighting)
+        {
+            return;
+        }
             
         if (rndCmp.mesh)
         {
@@ -93,6 +99,8 @@ export class LightingSystem extends System
         result.useKernelBlur = args.useKernelBlur;
         result.blurKernel = args.blurKernel;
         result.bias = args.bias;
+        result.usePoissonSampling = true;
+        result.usePercentageCloserFiltering = true;
         return result;
     }
 

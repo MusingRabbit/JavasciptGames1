@@ -5,7 +5,6 @@ import { it } from "node:test";
 import { LiteEvent } from "../Event/LiteEvent";
 import { FileHelper } from "../Util/File/FileHelper";
 
-
 class QueueData
 {
     fileName : string;
@@ -177,3 +176,4 @@ export class DataManager
         }
     }
 }
+

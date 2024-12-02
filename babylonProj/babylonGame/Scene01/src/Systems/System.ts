@@ -1,4 +1,4 @@
-import GameObject from "../GameObjects/gameObject";
+import { GameObject } from "../GameObjects/gameObject";
 
 export class System 
 {
@@ -13,7 +13,7 @@ export class System
     {
     }
     
-    public Update() : void
+    public Update(dt : number) : void
     {
     }
 

@@ -1,8 +1,12 @@
 import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix, Mesh, Material } from "@babylonjs/core";
-import { Transform, RenderComponent, LightComponent, CameraComponent } from "../Components/component";
-import GameObject from "../GameObjects/gameObject";
+
 import { System } from "./System";
 import { LiteEvent } from "../Event/LiteEvent";
+import { Transform } from "../Components/Transform";
+import { GameObject } from "../GameObjects/gameObject";
+import { RenderComponent } from "../Components/RenderComponent";
+import { CameraComponent } from "../Components/CameraComponent";
+import { LightComponent } from "../Components/LightComponent";
 
 export class GameObjectSystem extends System {
     constructor()
@@ -14,19 +18,19 @@ export class GameObjectSystem extends System {
         super.Initialise();
     }
 
-    public Update() : void
+    public Update(dt : number) : void
     {
-        this.processGameObjects();
-        super.Update();
+        this.processGameObjects(dt);
+        super.Update(dt);
     }
     
-    private processGameObjects(): void {
+    private processGameObjects(dt : number): void {
         for (let obj of this.gameObjs.values()) {
-            this.updateComponents(obj);
+            this.updateComponents(dt, obj);
         }
     }
 
-    private updateComponents(gameObj: GameObject): void {
+    private updateComponents(dt : number, gameObj: GameObject): void {
         for (let cmp of gameObj.components) {
             if (cmp instanceof RenderComponent) {
                 this.updateMeshTransforms(gameObj.GetWorldTransform(), cmp);
@@ -37,9 +41,12 @@ export class GameObjectSystem extends System {
             //    this.updateLightPosition(gameObj.GetWorldTransform(), cmp);
             //}
 
-            if (cmp instanceof CameraComponent) {
-                this.updateCameraPosition(gameObj.GetWorldTransform(), cmp);
-            }
+            //if (cmp instanceof CameraComponent) {
+            //    this.updateCameraPosition(gameObj.GetWorldTransform(), cmp);
+            //}
+
+
+            cmp.Update(dt);
         }
     }
 
@@ -76,13 +83,5 @@ export class GameObjectSystem extends System {
     }
 
     private updateMaterialSettings(cmp : RenderComponent) : void {
-        let mat = cmp.GetMaterial();
-        
-        if (mat)
-        {
-            mat.sideOrientation = Material.LineLoopDrawMode;
-            //mat.sideOrientation = Mesh.DEFAULTSIDE;
-        }
-
     }
-}
+}   

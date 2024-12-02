@@ -2,8 +2,6 @@ import { AbstractMesh, Mesh, Nullable, Scene, SceneLoader } from "@babylonjs/cor
 import { LiteEvent } from "../Event/LiteEvent";
 import { FileHelper, PathInfo } from "../Util/File/FileHelper";
 
-
-
 export class MeshData
 {
     name : string;

@@ -1,13 +1,13 @@
 import { Color3, DirectionalLight, HemisphericLight, Mesh, PointLight, Scene, SpotLight, StandardMaterial, Texture, Vector3 } from "@babylonjs/core";
 import { GameObjectSystem } from "../Systems/GameObjectSystem";
-import { LightComponent, LightType, RenderComponent, ShapeType, Transform } from "../Components/component";
 import SceneObjectBuilder from "./SceneObjectBuilder";
-import GameObject from "../GameObjects/gameObject";
+
 import { ComponentFactory, CreateRenderComponentArgs } from "./ComponentFactory";
 import { LiteEvent } from "../Event/LiteEvent";
 import { MeshData } from "../Data/MeshRepository";
-
-
+import { Transform } from "../Components/Transform";
+import { GameObject } from "../GameObjects/gameObject";
+import { LightType, ShapeType } from "../Global";
 
 
 export class GameObjectFactory
@@ -31,7 +31,9 @@ export class GameObjectFactory
     {
         let result = new GameObject();
         result.id = this.getUID(36);
-        result.transform = trans;
+        result.transform.position = trans.position;
+        result.transform.rotation = trans.rotation;
+        result.transform.scale = trans.scale;
         result.name = name;
 
         return result;
@@ -68,7 +70,6 @@ export class GameObjectFactory
         {
             name : name + "_light", 
             type : type, 
-            transform : transform, 
             colour : colour, 
             radius : 100, 
             intensity : 1.0,
@@ -94,7 +95,7 @@ export class GameObjectFactory
 
         let result = this.CreateGameObject(meshData.name, transform);
 
-        let rndCmp = this.componentFactory.CreateRenderComponent({name : meshData.name + "_mesh", shape : ShapeType.Sphere, transform : transform});
+        let rndCmp = this.componentFactory.CreateRenderComponent({name : meshData.name + "_mesh", shape : ShapeType.Sphere});
         let mat = rndCmp.GetMaterial();
 
         if (mat)
@@ -123,7 +124,6 @@ export class GameObjectFactory
 
         let args = new CreateRenderComponentArgs();
         args.name = "cmp";
-        args.transform = transform;
         args.mesh = mesh;
 
         let renderCmp = this.componentFactory.CreateRenderComponent(args);
@@ -138,17 +138,16 @@ export class GameObjectFactory
 
     public CreateShapeGameObject(position : Vector3, shape: ShapeType) : GameObject
     {
-        let transform = new Transform();
-        transform.position = position;
-
         let name =  "obj" + ShapeType[shape];
+        let trans = new Transform();
+        trans.position = position;
 
-        let result = this.CreateGameObject(name, transform);
+        let result = this.CreateGameObject(name, trans);
 
         let args = new CreateRenderComponentArgs();
         args.name = "cmp";
-        args.transform = transform;
         args.shape = shape;
+        args.tessalation = 50;
 
         let renderCmp = this.componentFactory.CreateRenderComponent(args);
 
@@ -158,6 +157,4 @@ export class GameObjectFactory
         
         return result;
     }
-
-
 }

@@ -1,6 +1,5 @@
 import { Engine, Scene } from "@babylonjs/core";
 import SceneObjectBuilder from "./Factory/SceneObjectBuilder";
-import GameObject from "./GameObjects/gameObject";
 import { GameObjectSystem } from "./Systems/GameObjectSystem";
 import { GameObjectFactory } from "./Factory/GameObjectFactory";
 import { LightingSystem } from "./Systems/LightingSystem";
@@ -10,15 +9,21 @@ import { MeshRepository } from "./Data/MeshRepository";
 import "@babylonjs/inspector"
 import "@babylonjs/core/Debug/debugLayer"
 import { DataManager } from "./Data/DataManager";
+import { GameObject } from "./GameObjects/gameObject";
 
-export default class Game 
+export class Game 
 {
+    
+    private static _activeScene : Scene;
+
     engine : Engine;
     scene : Scene;
     sceneBuilder : SceneObjectBuilder;
     gameObjSys : GameObjectSystem;
     objFactory : GameObjectFactory;
     lightingSys : LightingSystem;
+
+    showDebug : boolean;
 
     dataManager : DataManager;
 
@@ -27,10 +32,13 @@ export default class Game
     isRunning : boolean;
     isInitialised :boolean;
 
+    public static get CurrentScene() : Scene { return Game._activeScene; }
+
     constructor(engine : Engine)
     {
         this.engine = engine;
         this.scene = new Scene(this.engine);
+        Game._activeScene = this.scene;
         this.sceneBuilder = new SceneObjectBuilder(this.scene);
         this.gameObjSys = new GameObjectSystem();
         this.objFactory = new GameObjectFactory(this.scene, this.gameObjSys);
@@ -52,6 +60,8 @@ export default class Game
 
     public Initialise() : boolean
     {
+        Game._activeScene = this.scene;
+
         this.isInitialised = false;
 
         if (this.dataManager.isLoading)             
@@ -81,6 +91,7 @@ export default class Game
     
             try 
             {
+                Game._activeScene = this.scene;
                 this.engine.runRenderLoop(() => {
                     let dt = this.engine.getDeltaTime() * 0.001;
                     this.Update(dt);
@@ -107,8 +118,6 @@ export default class Game
         this.isRunning = false;
     }
 
-    
-
     public Load() : void 
     {
         this.dataManager.Load();
@@ -116,7 +125,7 @@ export default class Game
 
     public Update(dt : number) : void
     {
-        this.gameObjSys.Update();
+        this.gameObjSys.Update(dt);
     }
 
     public Render(dt : number) : void
@@ -127,10 +136,12 @@ export default class Game
 
     public ShowDebugLayer() {
         this.scene.debugLayer.show();
+        this.showDebug = true;
     }
     
     public HideDebugLayer() {
         this.scene.debugLayer.hide();
+        this.showDebug = false;
     }
 
     public AddGameObject(gameObj : GameObject)
@@ -140,3 +151,4 @@ export default class Game
         this.lightingSys.AddGameObject(gameObj);
     }
 }
+

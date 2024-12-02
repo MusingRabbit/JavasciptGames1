@@ -1,7 +1,11 @@
 import { Light } from "@babylonjs/core";
-import {Component, LightComponent, RenderComponent, Transform} from "../Components/component";
 
-export default class GameObject
+import { Transform } from "../Components/Transform";
+import { LightComponent } from "../Components/LightComponent";
+import { RenderComponent } from "../Components/RenderComponent";
+import { Component } from "../Components/component";
+
+export class GameObject
 {
     id : string;
     name : string;
@@ -15,6 +19,9 @@ export default class GameObject
     {
         this.components = [];
         this.children = [];
+
+        this.transform = new Transform();
+        this.transform.SetGameObject(this);
     }
 
     public AddChild(gameObj : GameObject)
@@ -38,6 +45,7 @@ export default class GameObject
 
     public AddComponent<T extends Component>(arg : T)
     {
+        arg.SetGameObject(this);
         this.components.push(arg);
         this.updateParentRelationships();
     }
@@ -98,3 +106,4 @@ export default class GameObject
         return result;
     }
 }
+
