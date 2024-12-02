@@ -129,13 +129,13 @@ export class SimpleGame extends Game
 
     private setupBasicSceneLighting()
     {
-        this.light1 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.White(), LightType.Directional);
+        this.light1 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.Red(), LightType.Directional);
         this.setupFlyingDirectionalLight(this.light1);
 
-        this.light2 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.White(), LightType.Directional);
+        this.light2 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.Green(), LightType.Directional);
         this.setupFlyingDirectionalLight(this.light2);
 
-        this.light3 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.White(), LightType.Directional);
+        this.light3 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.Blue(), LightType.Directional);
         this.setupFlyingDirectionalLight(this.light3);
 
         //this.ambientLight = this.objFactory.CreateLightGameObject(new Vector3(0, 5, 10), new Color3(1,1,1),LightType.Hemispheric);
