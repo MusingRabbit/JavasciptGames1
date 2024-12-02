@@ -101,7 +101,7 @@ export class ComponentFactory
                     result.SetMesh(capsule);
                     break;
                 case ShapeType.Ground:
-                    let ground = this.sceneObjBuilder.CreateGround(args.name + "_ground", transform, args.tessalation);
+                    let ground = this.sceneObjBuilder.CreateGround(args.name + "_ground", transform, 10);
                     result.SetMesh(ground);
                     break;
                 case ShapeType.Plane:

@@ -67,6 +67,7 @@ export class RenderComponent extends Component
                 if (mat instanceof StandardMaterial)
                 {
                     mat.diffuseTexture = data.texture;
+                    mat.ambientTexture = data.texture;
                     mat.bumpTexture = data.normal;
                 }
             }

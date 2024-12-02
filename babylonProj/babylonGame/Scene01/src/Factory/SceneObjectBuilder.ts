@@ -87,6 +87,8 @@ export default class SceneObjectBuilder {
 
     for (var i = 0; i < size; i++)
     {
+      let mat = this.createDefaultMaterial(name + i);
+      mat.maxSimultaneousLights = 2;
       result.subMaterials.push(this.createDefaultMaterial(name + i));
     }
     

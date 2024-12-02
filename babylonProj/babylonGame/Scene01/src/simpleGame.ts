@@ -1,4 +1,4 @@
-import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager } from "@babylonjs/core";
+import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager, GlowLayer } from "@babylonjs/core";
 import { MathHelper } from "./mathHelper";
 import { QuaternionHelper } from "./Util/Math/QuaternionHelper";
 import { Game } from "./game";
@@ -8,7 +8,7 @@ import { LightType, ShapeType } from "./Global";
 import { RenderComponent } from "./Components/RenderComponent";
 import { DebugTransform } from "./Components/DebugTransform";
 
-const TEMPLE_OBJ_FILEPATH  = "ruinedTemple.obj";
+const TEMPLE_OBJ_FILEPATH  = "ruinedTemple.glb";
 
 export class SimpleGame extends Game
 {
@@ -34,6 +34,7 @@ export class SimpleGame extends Game
     public Initialise(): boolean {
         if (super.Initialise())
         {
+            //this.renderSys.EnableGlowLayer();
             this.setupBasicScene();
             return true;
         }
@@ -76,6 +77,7 @@ export class SimpleGame extends Game
     }
 
     public Render(dt : number): void {
+        
         super.Render(dt);
     }
 
@@ -127,13 +129,13 @@ export class SimpleGame extends Game
 
     private setupBasicSceneLighting()
     {
-        this.light1 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.Red(), LightType.Directional);
+        this.light1 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.White(), LightType.Directional);
         this.setupFlyingDirectionalLight(this.light1);
 
-        this.light2 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.Green(), LightType.Directional);
+        this.light2 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.White(), LightType.Directional);
         this.setupFlyingDirectionalLight(this.light2);
 
-        this.light3 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.Blue(), LightType.Directional);
+        this.light3 = this.objFactory.CreateLightGameObject(new Vector3(0,100,0), Color3.White(), LightType.Directional);
         this.setupFlyingDirectionalLight(this.light3);
 
         //this.ambientLight = this.objFactory.CreateLightGameObject(new Vector3(0, 5, 10), new Color3(1,1,1),LightType.Hemispheric);
@@ -151,7 +153,6 @@ export class SimpleGame extends Game
         let deltaV = Vector3.Zero().subtract(this.camera.position);
         this.camera.rotation = QuaternionHelper.QuaternionLookRotation(deltaV, Vector3.Up()).toEulerAngles();
 
-
         this.setupBasicSceneLighting();
         this.createTemple();
 
@@ -159,8 +160,6 @@ export class SimpleGame extends Game
         //this.ground.transform.rotation = Quaternion.FromEulerAngles(MathHelper.DegToRad(90),0,0);
         this.ground.transform.scale = new Vector3(500,500,500);
 
-        let stoneTxr = this.dataManager.GetTexture("stone_wall_01.jpg");
-        let rockTxr = this.dataManager.GetTexture("rock_wall_01.jpg");
         let grassTxr = this.dataManager.GetTexture("grass.jpg");
 
         let grc = this.ground.GetComponent(RenderComponent);

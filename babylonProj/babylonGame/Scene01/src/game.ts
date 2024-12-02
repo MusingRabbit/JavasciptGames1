@@ -10,6 +10,7 @@ import "@babylonjs/inspector"
 import "@babylonjs/core/Debug/debugLayer"
 import { DataManager } from "./Data/DataManager";
 import { GameObject } from "./GameObjects/gameObject";
+import { RenderSystem } from "./Systems/RenderSystem";
 
 export class Game 
 {
@@ -22,6 +23,7 @@ export class Game
     gameObjSys : GameObjectSystem;
     objFactory : GameObjectFactory;
     lightingSys : LightingSystem;
+    renderSys : RenderSystem;
 
     showDebug : boolean;
 
@@ -43,6 +45,7 @@ export class Game
         this.gameObjSys = new GameObjectSystem();
         this.objFactory = new GameObjectFactory(this.scene, this.gameObjSys);
         this.lightingSys = new LightingSystem();
+        this.renderSys = new RenderSystem();
 
         this.isRunning = false;
 
@@ -77,6 +80,7 @@ export class Game
 
         this.lightingSys.Initialise();
         this.gameObjSys.Initialise();
+        this.renderSys.Initialise();
 
         this.isInitialised = true;
         return this.isInitialised;
@@ -130,6 +134,7 @@ export class Game
 
     public Render(dt : number) : void
     {
+        this.renderSys.Update(dt);
         this.scene.render();
     }
     

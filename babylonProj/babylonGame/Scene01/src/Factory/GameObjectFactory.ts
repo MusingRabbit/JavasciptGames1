@@ -147,7 +147,7 @@ export class GameObjectFactory
         let args = new CreateRenderComponentArgs();
         args.name = "cmp";
         args.shape = shape;
-        args.tessalation = 50;
+        args.tessalation = 10;
 
         let renderCmp = this.componentFactory.CreateRenderComponent(args);
 
