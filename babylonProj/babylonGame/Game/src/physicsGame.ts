@@ -52,7 +52,7 @@ export class PhysicsGame extends Game
     private setupScene() : void 
     {
         this.createCamera();
-        this.setupSceneLighting();
+        //this.setupSceneLighting();
         this.createObjects(2000);
     }
 
@@ -76,20 +76,12 @@ export class PhysicsGame extends Game
             hemiLight.range = 100;
             hemiLight.direction = Vector3.Zero().subtract(this.ambientLight.transform.Position);
         }
-
-
-
     }
 
-    private createObjects(count : number)
+    private createLargeSphere(pos : Vector3) : GameObject
     {
-        let startPos = new Vector3(-30,-30,-30);
-        let endPos = new Vector3(30, 30, 30);
-
-        let maxSpeed = 100;
-
-        let bigSphere = this.objFactory.CreateShapeGameObject(Vector3.Zero(), ShapeType.Sphere);
-        bigSphere.transform.Scale = new Vector3(5,5,5);
+        let result = this.objFactory.CreateShapeGameObject(pos, ShapeType.Sphere);
+        result.transform.Scale = new Vector3(5,5,5);
 
         let physAttCmp = new PhysicsAttractor();
 
@@ -100,17 +92,33 @@ export class PhysicsGame extends Game
         physCmp.shapeType = PhysicsShapeType.SPHERE;
         physCmp.mass = 1000;
 
-        bigSphere.AddComponent(physAttCmp);
-        bigSphere.AddComponent(physCmp);
+        result.AddComponent(physAttCmp);
+        result.AddComponent(physCmp);
 
-        let matCmp = bigSphere.GetComponent(MeshComponent);
+        let matCmp = result.GetComponent(MeshComponent);
         let mat = matCmp?.GetMaterial() as StandardMaterial;
         mat.ambientColor = new Color3(0.6,0.6,0.4);
         mat.diffuseColor = mat.ambientColor;
         mat.emissiveColor = mat.ambientColor;
 
-        physCmp.ApplyImpulse(new Vector3(0,10,0));
+        //let pLight = this.objFactory.CreateLightGameObject(result.transform.Position, mat.ambientColor, LightType.Point);
+        //result.AddChild(pLight);
+        
+        return result;
+    }
 
+    private createObjects(count : number)
+    {
+        let startPos = new Vector3(-30,-30,-30);
+        let endPos = new Vector3(30, 30, 30);
+
+        let maxSpeed = 100;
+
+        let bigSphere = this.createLargeSphere(Vector3.Zero());
+
+        let physCmp = bigSphere.GetComponent(PhysicsComponent) as PhysicsComponent;
+        physCmp.ApplyImpulse(new Vector3(0,10,0));
+        
         for (var i = 0; i < count; i++)
         {
             let x = Random.GetNumber(startPos.x, endPos.x);

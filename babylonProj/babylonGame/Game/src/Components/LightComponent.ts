@@ -9,5 +9,9 @@ export class LightComponent extends Component
     {
         return <T>this.light;
     }
+
+    public SetLight<T extends Light>(light : T){
+        this.light = light;
+    }
 }
 

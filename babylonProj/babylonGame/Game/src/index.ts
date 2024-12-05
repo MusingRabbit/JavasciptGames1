@@ -5,7 +5,40 @@ import { SimpleGame } from "./simpleGame";
 import { PhysicsGame } from './physicsGame';
 import { Game } from './game';
 
+function startGame(gameName : string) : Game | null
+{
+    try 
+    {
+        let eng = new Engine(canvas, true, {}, true);
+        let game = new Game(eng);
+    
+        switch(gameName)
+        {
+            case ("temple") :
+            {
+                game = new SimpleGame(eng);
+                break;
+            }
+            case ("physics") : 
+            {
+                game = new PhysicsGame(eng);
+                break;
+            }
+        }
 
+        game.Initialise();
+        game.Run();
+        game.ShowDebugLayer();
+
+        return game;
+    }
+    catch(ex)
+    {
+        console.log(ex);
+    }
+
+    return null;
+}
 
 const CanvasName = "renderCanvas";
 
@@ -15,37 +48,9 @@ canvas.id = CanvasName;
 canvas.classList.add("background-canvas");
 document.body.appendChild(canvas);
 
+const urlParams = new URLSearchParams(window.location.search);
+const gameName = urlParams.get('name');
+
+let currGame = startGame("temple");
 
 
-try 
-{
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameName = urlParams.get('name');
-
-    let eng = new Engine(canvas, true, {}, true);
-    let currGame = new Game(eng);
-
-    //switch(gameName)
-    //{
-    //    case ("temple") :
-    //    {
-    //        currGame = new SimpleGame(eng);
-    //        break;
-    //    }
-    //    case ("physics") : 
-    //    {
-    //        currGame = new PhysicsGame(eng);
-    //        break;
-    //    }
-    //}
-
-    currGame = new PhysicsGame(eng);
-
-    currGame.Initialise();
-    currGame.Run();
-    currGame.ShowDebugLayer();
-}
-catch(ex)
-{
-    console.log(ex);
-}
