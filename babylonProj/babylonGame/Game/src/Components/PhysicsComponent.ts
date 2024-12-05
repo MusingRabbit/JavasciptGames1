@@ -43,7 +43,12 @@ export class PhysicsComponent extends Component
 
     public ApplyForce(force : Vector3)
     {
-        this.aggregate.body.applyForce(force, this.mesh.absolutePosition)
+        this.aggregate.body.applyForce(force, this.mesh.absolutePosition);
+    }
+
+    public ApplyImpulse(force : Vector3)
+    {
+        this.aggregate.body.applyImpulse(force, this.mesh.absolutePosition);
     }
 
     public Disable()

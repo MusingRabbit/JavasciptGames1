@@ -5,7 +5,7 @@ import { Game } from "./game";
 import { GameObject } from "./GameObjects/gameObject";
 import { LightComponent } from "./Components/LightComponent";
 import { LightType, ShapeType } from "./Global";
-import { MeshComponent } from "././Components/MeshComponent";
+import { MeshComponent } from "./Components/MeshComponent";
 import { DebugTransform } from "./Components/DebugTransform";
 
 const TEMPLE_OBJ_FILEPATH  = "ruinedTemple.glb";

@@ -49,8 +49,8 @@ export default class SceneObjectBuilder {
 
   public CreateBox(name: string, transform : Transform): Mesh {
     let result = MeshBuilder.CreateBox(name, { size: transform.GetSize() }, this.scene);
-    result.position = transform.position;
-    result.rotationQuaternion = transform.rotation;
+    result.position = transform.Position;
+    result.rotationQuaternion = transform.Rotation;
 
     result.receiveShadows = true;
     result.material = this.createDefaultMaterial("mat_" + name);
@@ -60,9 +60,9 @@ export default class SceneObjectBuilder {
 
   public CreateCapsule(name: string, transform : Transform): Mesh 
   {
-    let result = MeshBuilder.CreateCapsule(name, {radius : transform.scale.x, height : transform.scale.y}, this.scene);
-    result.position = transform.position;
-    result.rotationQuaternion = transform.rotation;
+    let result = MeshBuilder.CreateCapsule(name, {radius : transform.Scale.x, height : transform.Scale.y}, this.scene);
+    result.position = transform.Position;
+    result.rotationQuaternion = transform.Rotation;
 
     result.receiveShadows = true;
     result.material = this.createDefaultMaterial("mat_" + name);
@@ -71,10 +71,10 @@ export default class SceneObjectBuilder {
   }
 
   public CreateSphere(name: string, transform: Transform, segments: number = 32) {
-    let result = MeshBuilder.CreateSphere(name, { diameter: transform.scale.x, segments: segments }, this.scene);
+    let result = MeshBuilder.CreateSphere(name, { diameter: transform.Scale.x, segments: segments }, this.scene);
 
-    result.position = transform.position;
-    result.rotationQuaternion = transform.rotation;
+    result.position = transform.Position;
+    result.rotationQuaternion = transform.Rotation;
     result.receiveShadows = true;
     result.material = this.createDefaultMaterial("mat_" + name);
 
@@ -126,7 +126,7 @@ export default class SceneObjectBuilder {
 
     let grid = {h : tessalate, w : tessalate};
     let result = MeshBuilder.CreateTiledGround(name, { xmin: -3, zmin: -3, xmax: 3, zmax: 3, subdivisions : grid}, this.scene);
-    result.position = transform.position;
+    result.position = transform.Position;
     result.receiveShadows = true;
     result.material = this.createMultiMaterial("mat_" + name, tessalate);
     this.createTiledSubmesh(result, grid.w, grid.h);
@@ -157,8 +157,8 @@ export default class SceneObjectBuilder {
       result.increaseVertices(tessalate);
     }
     
-    result.position = transform.position;
-    result.scaling = transform.scale;
+    result.position = transform.Position;
+    result.scaling = transform.Scale;
 
     let mat = this.createDefaultMaterial("mat_" + name);
     mat.diffuseColor = Color3.White();

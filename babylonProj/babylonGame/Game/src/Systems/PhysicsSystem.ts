@@ -126,7 +126,7 @@ export class PhysicsSystem extends System
                     continue;
                 }
 
-                let direction = rhsGameObj.transform.Position.subtract(gObj.transform.Position).normalize();
+                let direction = gObj.transform.Position.subtract(rhsGameObj.transform.Position).normalize();
                 let velocity = direction.multiply(new Vector3(attractor.strength, attractor.strength, attractor.strength));
                 rhsPhysCmp.ApplyForce(velocity);
             }
@@ -143,7 +143,7 @@ export class PhysicsSystem extends System
           if (!node.length) {
             do {
               const d = node.data;
-              if (d[0] >= min.x && d[0] < max.x && d[1] >= min.y && d[1] < max.y && d[2] >= min.z && d[2] < max.z) {
+              if (d.x >= min.x && d.x < max.x && d.y >= min.y && d.y < max.y && d.z >= min.z && d.z < max.z) {
                 results.push(d);
               }
             } while (node = node.next);
@@ -172,8 +172,8 @@ export class PhysicsSystem extends System
 
         let t = d3.octree();
         t.x(nodeData.X);
-        t.x(nodeData.Y);
-        t.x(nodeData.Z);
+        t.y(nodeData.Y);
+        t.z(nodeData.Z);
 
         for (let node of this.nodes)
         {

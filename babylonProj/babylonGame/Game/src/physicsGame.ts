@@ -1,4 +1,4 @@
-import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager, GlowLayer, RandomNumberBlock, PhysicsShapeType } from "@babylonjs/core";
+import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager, GlowLayer, RandomNumberBlock, PhysicsShapeType, StandardMaterial } from "@babylonjs/core";
 
 import { Game } from "./game";
 import { GameObject } from "./GameObjects/gameObject";
@@ -8,6 +8,7 @@ import { PhysicsComponent } from "./Components/PhysicsComponent";
 import { PhysicsAttractor } from "./Components/PhysicsAttractor";
 import { QuaternionHelper } from "./Util/Math/QuaternionHelper";
 import { LightComponent } from "./Components/LightComponent";
+import { MeshComponent } from "./Components/MeshComponent";
 
 export class PhysicsGame extends Game
 {
@@ -25,6 +26,7 @@ export class PhysicsGame extends Game
         if (super.Initialise())
         {
             this.setupScene();
+            this.renderSys.EnableGlowLayer();
             this.isInitialised = true;
             return true;
         }
@@ -51,7 +53,7 @@ export class PhysicsGame extends Game
     {
         this.createCamera();
         this.setupSceneLighting();
-        this.createBalls(100);
+        this.createObjects(2000);
     }
 
     private createCamera()
@@ -75,12 +77,39 @@ export class PhysicsGame extends Game
             hemiLight.direction = Vector3.Zero().subtract(this.ambientLight.transform.Position);
         }
 
+
+
     }
 
-    private createBalls(count : number)
+    private createObjects(count : number)
     {
-        let startPos = new Vector3(-10,-10,-10);
-        let endPos = new Vector3(10, 10, 10);
+        let startPos = new Vector3(-30,-30,-30);
+        let endPos = new Vector3(30, 30, 30);
+
+        let maxSpeed = 100;
+
+        let bigSphere = this.objFactory.CreateShapeGameObject(Vector3.Zero(), ShapeType.Sphere);
+        bigSphere.transform.Scale = new Vector3(5,5,5);
+
+        let physAttCmp = new PhysicsAttractor();
+
+        physAttCmp.radius = 20;
+        physAttCmp.strength = 30;
+
+        let physCmp = new PhysicsComponent();
+        physCmp.shapeType = PhysicsShapeType.SPHERE;
+        physCmp.mass = 1000;
+
+        bigSphere.AddComponent(physAttCmp);
+        bigSphere.AddComponent(physCmp);
+
+        let matCmp = bigSphere.GetComponent(MeshComponent);
+        let mat = matCmp?.GetMaterial() as StandardMaterial;
+        mat.ambientColor = new Color3(0.6,0.6,0.4);
+        mat.diffuseColor = mat.ambientColor;
+        mat.emissiveColor = mat.ambientColor;
+
+        physCmp.ApplyImpulse(new Vector3(0,10,0));
 
         for (var i = 0; i < count; i++)
         {
@@ -88,22 +117,27 @@ export class PhysicsGame extends Game
             let y = Random.GetNumber(startPos.y, endPos.y);
             let z = Random.GetNumber(startPos.z, endPos.z);
             let v = new Vector3(x,y,z);
-            let gameObj = this.objFactory.CreateShapeGameObject(v, ShapeType.Sphere);
+
+            let rx = Random.GetNumber(-maxSpeed, maxSpeed);
+            let ry = Random.GetNumber(-maxSpeed, maxSpeed);
+            let rz = Random.GetNumber(-maxSpeed, maxSpeed);
+            let rv = new Vector3(rx,ry,rz);
+
+            let gameObj = this.objFactory.CreateShapeGameObject(v, ShapeType.Box);
+            gameObj.transform.Scale = new Vector3(0.5,0.5,0.5);
             
+            let meshCmp = gameObj.GetComponent(MeshComponent);
+            let mat = meshCmp?.GetMaterial() as StandardMaterial;
+            mat.ambientColor = Color3.Black();//  Random.GetColour3();
+            mat.diffuseColor = mat.ambientColor;
+            mat.emissiveColor = mat.ambientColor;
+
             let physCmp = new PhysicsComponent();
-            physCmp.shapeType = PhysicsShapeType.SPHERE;
+            physCmp.shapeType = PhysicsShapeType.BOX;
             physCmp.mass = 10;
+
             gameObj.AddComponent(physCmp);
-
-            let physAttCmp = new PhysicsAttractor();
-
-            if (i == 0)
-            {
-                physAttCmp.radius = 100;
-                physAttCmp.strength = 0.1;
-            }
-
-            gameObj.AddComponent(physAttCmp);
+            physCmp.ApplyImpulse(rv)
         }
     }
 }
