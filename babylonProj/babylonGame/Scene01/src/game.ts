@@ -1,4 +1,6 @@
-import { Engine, Scene } from "@babylonjs/core";
+import { Engine, HavokPlugin, Scene } from "@babylonjs/core";
+import HavokPhysics, { HavokPhysicsWithBindings } from "@babylonjs/havok";
+
 import SceneObjectBuilder from "./Factory/SceneObjectBuilder";
 import { GameObjectSystem } from "./Systems/GameObjectSystem";
 import { GameObjectFactory } from "./Factory/GameObjectFactory";
@@ -11,6 +13,7 @@ import "@babylonjs/core/Debug/debugLayer"
 import { DataManager } from "./Data/DataManager";
 import { GameObject } from "./GameObjects/gameObject";
 import { RenderSystem } from "./Systems/RenderSystem";
+import { PhysicsSystem } from "./Systems/PhysicsSystem";
 
 export class Game 
 {
@@ -24,6 +27,7 @@ export class Game
     objFactory : GameObjectFactory;
     lightingSys : LightingSystem;
     renderSys : RenderSystem;
+    physicsSys : PhysicsSystem;
 
     showDebug : boolean;
 
@@ -32,7 +36,8 @@ export class Game
     currTime : number;
 
     isRunning : boolean;
-    isInitialised :boolean;
+
+    isInitialised : boolean;
 
     public static get CurrentScene() : Scene { return Game._activeScene; }
 
@@ -46,6 +51,7 @@ export class Game
         this.objFactory = new GameObjectFactory(this.scene, this.gameObjSys);
         this.lightingSys = new LightingSystem();
         this.renderSys = new RenderSystem();
+        this.physicsSys = new PhysicsSystem(this.scene);
 
         this.isRunning = false;
 
@@ -65,8 +71,6 @@ export class Game
     {
         Game._activeScene = this.scene;
 
-        this.isInitialised = false;
-
         if (this.dataManager.isLoading)             
         {
             this.dataManager.OnLoadCompleted.on(() => {
@@ -78,12 +82,20 @@ export class Game
 
         console.log("game initialising");
 
+        this.physicsSys.Initialise();
         this.lightingSys.Initialise();
         this.gameObjSys.Initialise();
         this.renderSys.Initialise();
 
-        this.isInitialised = true;
-        return this.isInitialised;
+        return this.systemsInitialised();
+    }
+
+    private systemsInitialised() : boolean
+    {
+        return this.physicsSys.isReady() && 
+        this.lightingSys.isReady() && 
+        this.gameObjSys.isReady() && 
+        this.renderSys.isReady();
     }
 
     public Run() : boolean
@@ -111,7 +123,9 @@ export class Game
         else 
         {
             console.log("Run() -> Initialisation not yet complete.");
-            setTimeout(() => this.Run(), 10);
+            setTimeout(() => { 
+                this.Initialise();
+                this.Run()}, 10);
         }
 
         return this.isRunning;
@@ -130,6 +144,7 @@ export class Game
     public Update(dt : number) : void
     {
         this.gameObjSys.Update(dt);
+        this.physicsSys.Update(dt);
     }
 
     public Render(dt : number) : void
@@ -151,9 +166,10 @@ export class Game
 
     public AddGameObject(gameObj : GameObject)
     {
-        console.log("AddGameObject : " + gameObj.name + "(" + gameObj.id + ")");
+        console.log("AddGameObject : " + gameObj.name + "" + gameObj.name + ", @ {" + gameObj.transform.Position + "}");
         this.gameObjSys.AddGameObject(gameObj);
         this.lightingSys.AddGameObject(gameObj);
+        this.physicsSys.AddGameObject(gameObj);
     }
 }
 

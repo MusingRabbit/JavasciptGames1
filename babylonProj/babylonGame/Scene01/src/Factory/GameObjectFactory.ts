@@ -2,7 +2,7 @@ import { Color3, DirectionalLight, HemisphericLight, Mesh, PointLight, Scene, Sp
 import { GameObjectSystem } from "../Systems/GameObjectSystem";
 import SceneObjectBuilder from "./SceneObjectBuilder";
 
-import { ComponentFactory, CreateRenderComponentArgs } from "./ComponentFactory";
+import { ComponentFactory, CreateMeshComponentArgs } from "./ComponentFactory";
 import { LiteEvent } from "../Event/LiteEvent";
 import { MeshData } from "../Data/MeshRepository";
 import { Transform } from "../Components/Transform";
@@ -31,9 +31,10 @@ export class GameObjectFactory
     {
         let result = new GameObject();
         result.id = this.getUID(36);
-        result.transform.position = trans.position;
-        result.transform.rotation = trans.rotation;
-        result.transform.scale = trans.scale;
+        result.transform.Position = trans.Position;
+        result.transform.Rotation = trans.Rotation;
+        result.transform.Scale = trans.Scale;
+        
         result.name = name;
 
         return result;
@@ -46,14 +47,14 @@ export class GameObjectFactory
     public CreateLightGameObject(position : Vector3, colour : Color3, type : LightType) : GameObject
     {
         let transform = new Transform();
-        transform.position = position;
-        transform.scale = new Vector3(0.5,0.5,0.5);
+        transform.Position = position;
+        transform.Scale = new Vector3(0.5,0.5,0.5);
 
         let name = "obj" + LightType[type];
 
         let result = this.CreateGameObject(name ,transform);
 
-        let rndCmp = this.componentFactory.CreateRenderComponent({name : name + "_mesh", shape : ShapeType.Sphere, transform : transform});
+        let rndCmp = this.componentFactory.CreateMeshComponent({name : name + "_mesh", shape : ShapeType.Sphere, transform : transform});
         let mat = rndCmp.GetMaterial<StandardMaterial>();
 
         rndCmp.mesh.receiveShadows = false;
@@ -91,11 +92,11 @@ export class GameObjectFactory
     public CreateMeshGameObjects(position : Vector3, meshData : MeshData) : GameObject
     {
         let transform = new Transform();
-        transform.position = position;
+        transform.Position = position;
 
         let result = this.CreateGameObject(meshData.name, transform);
 
-        let rndCmp = this.componentFactory.CreateRenderComponent({name : meshData.name + "_mesh", shape : ShapeType.Sphere});
+        let rndCmp = this.componentFactory.CreateMeshComponent({name : meshData.name + "_mesh", shape : ShapeType.Sphere});
         let mat = rndCmp.GetMaterial();
 
         if (mat)
@@ -116,17 +117,17 @@ export class GameObjectFactory
     public CreateMeshGameObject(position : Vector3, mesh: Mesh) : GameObject
     {
         let transform = new Transform();
-        transform.position = position.add(mesh.position);
+        transform.Position = position.add(mesh.position);
 
         let name = "obj" + mesh.name.split('.')[0];
 
         let result = this.CreateGameObject(name, transform);
 
-        let args = new CreateRenderComponentArgs();
+        let args = new CreateMeshComponentArgs();
         args.name = "cmp";
         args.mesh = mesh;
 
-        let renderCmp = this.componentFactory.CreateRenderComponent(args);
+        let renderCmp = this.componentFactory.CreateMeshComponent(args);
 
         result.components.push(renderCmp);
 
@@ -140,16 +141,16 @@ export class GameObjectFactory
     {
         let name =  "obj" + ShapeType[shape];
         let trans = new Transform();
-        trans.position = position;
+        trans.Position = position;
 
         let result = this.CreateGameObject(name, trans);
 
-        let args = new CreateRenderComponentArgs();
+        let args = new CreateMeshComponentArgs();
         args.name = "cmp";
         args.shape = shape;
         args.tessalation = 10;
 
-        let renderCmp = this.componentFactory.CreateRenderComponent(args);
+        let renderCmp = this.componentFactory.CreateMeshComponent(args);
 
         result.components.push(renderCmp);
         

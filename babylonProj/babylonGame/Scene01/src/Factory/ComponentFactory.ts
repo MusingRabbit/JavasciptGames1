@@ -4,7 +4,7 @@ import SceneObjectBuilder from "./SceneObjectBuilder";
 import { TextureData } from "../Data/TextureRepository";
 import { Transform } from "../Components/Transform";
 import { LightType, ShapeType } from "../Global";
-import { RenderComponent } from "../Components/RenderComponent";
+import { MeshComponent } from "../Components/MeshComponent";
 import { LightComponent } from "../Components/LightComponent";
 
 export class CreateCameraComponentArgs
@@ -13,7 +13,7 @@ export class CreateCameraComponentArgs
     transform : Transform;
 }
 
-export class CreateRenderComponentArgs
+export class CreateMeshComponentArgs
 {
     name : string;
     transform? : Transform;
@@ -71,9 +71,9 @@ export class ComponentFactory
         // TODO:
     }
 
-    public CreateRenderComponent(args : CreateRenderComponentArgs)
+    public CreateMeshComponent(args : CreateMeshComponentArgs)
     {
-        let result = new RenderComponent();
+        let result = new MeshComponent();
         let transform = new Transform();
 
         if (args.transform)

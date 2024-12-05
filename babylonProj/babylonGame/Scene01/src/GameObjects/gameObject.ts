@@ -2,7 +2,7 @@ import { Light } from "@babylonjs/core";
 
 import { Transform } from "../Components/Transform";
 import { LightComponent } from "../Components/LightComponent";
-import { RenderComponent } from "../Components/RenderComponent";
+import { MeshComponent } from "../Components/MeshComponent";
 import { Component } from "../Components/component";
 
 export class GameObject
@@ -29,16 +29,20 @@ export class GameObject
         this.children.push(gameObj);
 
         let lgt = gameObj.GetComponent(LightComponent);
-        let rnd = gameObj.GetComponent(RenderComponent);
-        let pRnd = this.GetComponent(RenderComponent);
+        let rnd = gameObj.GetComponent(MeshComponent);
+        let pRnd = this.GetComponent(MeshComponent);
 
-        rnd.mesh.setParent(pRnd.mesh);
-
-        if (lgt?.light)
+        if (rnd && pRnd)
         {
-            lgt.light.parent = rnd.mesh;
-            lgt.light.setEnabled(true);
+            rnd.mesh.setParent(pRnd.mesh);
+
+            if (lgt?.light)
+            {
+                lgt.light.parent = rnd.mesh;
+                lgt.light.setEnabled(true);
+            }
         }
+
 
         gameObj.parent = this;
     }
@@ -52,7 +56,7 @@ export class GameObject
 
     private updateParentRelationships()
     {
-        let rnd = this.GetComponent(RenderComponent);
+        let rnd = this.GetComponent(MeshComponent);
         let lgt = this.GetComponent(LightComponent);
 
         if (rnd?.mesh && lgt?.light)
@@ -62,7 +66,7 @@ export class GameObject
     }
 
     //I have no idea if this is how you handle generics in typescript.
-    public GetComponent<T extends Component>(type: { new (...args: any[]): T }, ...args: any[]) : T {
+    public GetComponent<T extends Component>(type: { new (...args: any[]): T }, ...args: any[]) : T | null {
         let result : T;
 
         for (let cmp of this.components)
@@ -74,7 +78,7 @@ export class GameObject
             }
         }
 
-        return <T>new Component();
+        return null;
     }
 
     public GetLocalTransform()
@@ -86,9 +90,9 @@ export class GameObject
     {
         let result = new Transform();
 
-        result.position = this.transform.position;
-        result.rotation = this.transform.rotation;
-        result.scale = this.transform.scale;
+        result.Position = this.transform.Position;
+        result.Rotation = this.transform.Rotation;
+        result.Scale = this.transform.Scale;
 
         var currObj = <GameObject>this.parent;
 
@@ -96,9 +100,9 @@ export class GameObject
         {
             while (currObj)
             {
-                result.position = result.position.add(currObj.transform.position);
-                result.rotation = result.rotation.add(currObj.transform.rotation);
-                result.scale = currObj.transform.scale;
+                result.Position = result.Position.add(currObj.transform.Position);
+                result.Rotation = result.Rotation.add(currObj.transform.Rotation);
+                result.Scale = currObj.transform.Scale;
                 currObj = currObj.parent;
             }
         }

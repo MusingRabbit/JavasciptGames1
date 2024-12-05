@@ -2,6 +2,7 @@ import './main.css';
 
 import { Engine } from "@babylonjs/core";
 import { SimpleGame } from "./simpleGame";
+import { PhysicsGame } from './physicsGame';
 
 const CanvasName = "renderCanvas";
 

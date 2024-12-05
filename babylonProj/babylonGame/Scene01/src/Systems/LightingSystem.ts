@@ -1,7 +1,7 @@
 import { IShadowLight, Mesh, ShadowGenerator, ShadowLight } from "@babylonjs/core";
 import { System } from "./System";
 import { GameObject } from "../GameObjects/gameObject";
-import { RenderComponent } from "../Components/RenderComponent";
+import { MeshComponent } from "../Components/MeshComponent";
 import { LightComponent } from "../Components/LightComponent";
 
 class ShadowGeneratorArgs
@@ -36,12 +36,20 @@ export class LightingSystem extends System
         this.lights = [];
     }
 
-    public Initialise()
+    public Initialise (reinitialise : boolean = false) : boolean 
     {
-        for(let gameObj of this.gameObjs.values())
+        if (super.Initialise(reinitialise))
         {
-            this.processGameObject(gameObj);
+            for(let gameObj of this.gameObjs.values())
+            {
+                this.processGameObject(gameObj);
+            }
+
+            this.initialised = true;
+            return true;
         }
+
+        return this.initialised;
     }
 
     
@@ -65,27 +73,30 @@ export class LightingSystem extends System
 
     private processGameObject(gameObj : GameObject)
     {
-        let rndCmp = gameObj.GetComponent(RenderComponent);
+        let rndCmp = gameObj.GetComponent(MeshComponent);
         let lightCmp = gameObj.GetComponent(LightComponent);
 
-        if (rndCmp.ignoreLighting)
+        if (rndCmp)
         {
-            return;
-        }
-            
-        if (rndCmp.mesh)
-        {
-            this.meshes.push(rndCmp.mesh);
+            if (rndCmp.ignoreLighting)
+                {
+                    return;
+                }
+                    
+                if (rndCmp.mesh)
+                {
+                    this.meshes.push(rndCmp.mesh);
+                }
         }
 
-        if (lightCmp.light)
+        if (lightCmp)
         {
             if (lightCmp.light instanceof ShadowLight)
-                {
-                    let args = new ShadowGeneratorArgs();
-                    args.light = lightCmp.light;
-                    this.lights.push({ light : lightCmp.light, shadowGen : this.createShadowGenerator(args)})
-                }
+            {
+                let args = new ShadowGeneratorArgs();
+                args.light = lightCmp.light;
+                this.lights.push({ light : lightCmp.light, shadowGen : this.createShadowGenerator(args)})
+            }
         }
     }
 

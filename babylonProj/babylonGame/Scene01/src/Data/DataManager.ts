@@ -107,6 +107,11 @@ export class DataManager
 
     public Load()
     {
+        if (this.meshFileQueue.size < 1 && this.txrFileQueue.size < 1)
+        {
+            return;
+        }
+
         this.isLoading = true;
         this.onLoadTriggered = false;
 

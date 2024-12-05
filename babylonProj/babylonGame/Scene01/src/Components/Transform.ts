@@ -3,9 +3,44 @@ import { Component } from "./component";
 
 export class Transform extends Component
 {
-    position : Vector3;
-    rotation : Quaternion;
-    scale : Vector3;
+    public get Position() : Vector3
+    {
+        return this.position;
+    }
+
+    public set Position(value :Vector3)
+    {
+        this.position = value;
+        this.isDirty = true;
+    }
+
+    public get Rotation() : Quaternion
+    {
+        return this.rotation;
+    }
+
+    public set Rotation(value :Quaternion)
+    {
+        this.rotation = value;
+        this.isDirty = true;
+    }
+
+    public get Scale() : Vector3
+    {
+        return this.scale;
+    }
+
+    public set Scale(value :Vector3)
+    {
+        this.scale = value;
+        this.isDirty = true;
+    }
+
+    private position : Vector3;
+    private rotation : Quaternion;
+    private scale : Vector3;
+
+    isDirty :boolean;
 
     constructor()
     {
@@ -14,6 +49,10 @@ export class Transform extends Component
         this.position = Vector3.Zero();
         this.rotation = Quaternion.Identity();
         this.scale = new Vector3(1,1,1);
+    }
+
+    public Update(dt: number): void {
+        this.isDirty = false;
     }
 
     public SetRotationEuler(rot : Vector3)

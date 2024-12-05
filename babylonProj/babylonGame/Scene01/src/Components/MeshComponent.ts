@@ -2,16 +2,15 @@ import { Material, Mesh, MultiMaterial, Nullable, StandardMaterial, Texture } fr
 import { TextureData } from "../Data/TextureRepository";
 import { Component } from "./component";
 
-export class RenderComponent extends Component 
+export class MeshComponent extends Component 
 {
     mesh : Mesh;
     texture : Texture;
-    ignoreLighting :boolean;
+    ignoreLighting : boolean;
 
     constructor()
     {
         super();
-
         this.ignoreLighting = false;
     }
 
@@ -77,6 +76,5 @@ export class RenderComponent extends Component
             material.diffuseTexture = data.texture;
             material.bumpTexture = data.normal;
         }
-        
     }
 }

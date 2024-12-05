@@ -9,13 +9,20 @@ export class RenderSystem extends System
     constructor()
     {
         super();
+        this.initialised = false;
     }
 
-    public Initialise(): void {
-        super.Initialise();
+    public Initialise(reinitialise : boolean = false) : boolean
+    {
+        if (super.Initialise(reinitialise))
+        {
+            this.glowLayer = new GlowLayer("glowLayer", Game.CurrentScene);
+            this.glowLayer.isEnabled = false;
+            this.initialised = true;
+            return true;
+        }
 
-        this.glowLayer = new GlowLayer("glowLayer", Game.CurrentScene);
-        this.glowLayer.isEnabled = false;
+        return this.initialised;
     }
 
     public Update(dt: number): void {
