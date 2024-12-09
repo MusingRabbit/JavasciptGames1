@@ -9,6 +9,8 @@ import { PhysicsAttractor } from "./Components/PhysicsAttractor";
 import { QuaternionHelper } from "./Util/Math/QuaternionHelper";
 import { LightComponent } from "./Components/LightComponent";
 import { MeshComponent } from "./Components/MeshComponent";
+import { transformWithEsbuild } from "vite";
+import { Transform } from "./Components/Transform";
 
 export class PhysicsGame extends Game
 {
@@ -36,11 +38,29 @@ export class PhysicsGame extends Game
 
     public Load() : void 
     {
-
         super.Load();
     }
 
     public Update(dt : number): void {
+        let pickedObj = this.getPickedGameObject();
+
+        if (pickedObj != null)
+        {
+            let mc = pickedObj.GetComponent(MeshComponent);
+            let pa = pickedObj.GetComponent(PhysicsAttractor);
+            let mat = mc?.GetMaterial() as StandardMaterial;
+
+            if (pa)
+            {
+                pa.strength = - pa.strength;
+
+                let offColour = Color3.Black();
+                let toggleBlack = pa.strength < 0;
+                mat.ambientColor = toggleBlack ? offColour : mat.diffuseColor;
+                mat.emissiveColor = toggleBlack ? mat.ambientColor : mat.diffuseColor;
+            }
+        }
+
         super.Update(dt);
     }
 
@@ -54,11 +74,27 @@ export class PhysicsGame extends Game
         this.createCamera();
         //this.setupSceneLighting();
         this.createObjects(2000);
+        this.createBoundary(Vector3.Zero(), 100);
+    }
+
+    private createBoundary(position : Vector3, size : number)
+    {
+        let rTrans = new Transform();
+        rTrans.Position = position;
+        let lRoot = this.objFactory.CreateGameObject("objBoundary", rTrans)
+
+        let l = this.objFactory.CreateShapeGameObject(new Vector3(100, 0, 0), ShapeType.Box, "objBoundary_L");
+
+
+        l.transform.Position = l.transform.Position.add(position);
+        l.transform.Scale = new Vector3(1, 10, 10);
+
+        lRoot.AddChild(l);
     }
 
     private createCamera()
     {
-        let campos = new Vector3(0, 0, -10);
+        let campos = new Vector3(0, 0, -50);
         this.camera = this.sceneBuilder.CreateFreeCamera("camera", campos, 1, true);
         let deltaV = Vector3.Zero().subtract(this.camera.position);
         this.camera.rotation = QuaternionHelper.QuaternionLookRotation(deltaV, Vector3.Up()).toEulerAngles();
@@ -78,19 +114,38 @@ export class PhysicsGame extends Game
         }
     }
 
+    private getPickedGameObject() : GameObject | null
+    {
+        let mouseState = this.inputSys.GetMouseState();
+
+        if (!mouseState.clicked)
+        {
+            return null;
+        }
+
+        var pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+
+        if (pickInfo.hit && pickInfo.pickedMesh)
+        {
+            return this.gameObjSys.GetGameObjectByMesh(pickInfo.pickedMesh);
+        }
+
+        return null;
+    }
+
     private createLargeSphere(pos : Vector3) : GameObject
     {
-        let result = this.objFactory.CreateShapeGameObject(pos, ShapeType.Sphere);
+        let result = this.objFactory.CreateShapeGameObject(pos, ShapeType.Sphere, "star");
         result.transform.Scale = new Vector3(5,5,5);
 
         let physAttCmp = new PhysicsAttractor();
 
-        physAttCmp.radius = 20;
+        physAttCmp.radius = 200;
         physAttCmp.strength = 30;
 
         let physCmp = new PhysicsComponent();
-        physCmp.shapeType = PhysicsShapeType.SPHERE;
-        physCmp.mass = 1000;
+        physCmp.shapeType = PhysicsShapeType.MESH;
+        physCmp.mass = 10000;
 
         result.AddComponent(physAttCmp);
         result.AddComponent(physCmp);
@@ -114,10 +169,10 @@ export class PhysicsGame extends Game
 
         let maxSpeed = 100;
 
-        let bigSphere = this.createLargeSphere(Vector3.Zero());
+        let sphere0 = this.createLargeSphere(Vector3.Zero());
 
-        let physCmp = bigSphere.GetComponent(PhysicsComponent) as PhysicsComponent;
-        physCmp.ApplyImpulse(new Vector3(0,10,0));
+        let sPCmp = sphere0.GetComponent(PhysicsComponent) as PhysicsComponent;
+        sPCmp.ApplyImpulse(new Vector3(0,0,-5))
         
         for (var i = 0; i < count; i++)
         {
@@ -131,7 +186,7 @@ export class PhysicsGame extends Game
             let rz = Random.GetNumber(-maxSpeed, maxSpeed);
             let rv = new Vector3(rx,ry,rz);
 
-            let gameObj = this.objFactory.CreateShapeGameObject(v, ShapeType.Box);
+            let gameObj = this.objFactory.CreateShapeGameObject(v, ShapeType.Box, "obj" + i);
             gameObj.transform.Scale = new Vector3(0.5,0.5,0.5);
             
             let meshCmp = gameObj.GetComponent(MeshComponent);

@@ -137,18 +137,22 @@ export class GameObjectFactory
     }
 
 
-    public CreateShapeGameObject(position : Vector3, shape: ShapeType) : GameObject
+    public CreateShapeGameObject(position : Vector3, shape: ShapeType, name? : string, tessalation? : number) : GameObject
     {
-        let name =  "obj" + ShapeType[shape];
+        let objName =  name ?? "obj" + ShapeType[shape];
         let trans = new Transform();
         trans.Position = position;
 
-        let result = this.CreateGameObject(name, trans);
+        let result = this.CreateGameObject(objName, trans);
 
         let args = new CreateMeshComponentArgs();
-        args.name = "cmp";
+        args.name = objName;
         args.shape = shape;
-        args.tessalation = 10;
+
+        if (tessalation)
+        {
+            args.tessalation = tessalation;
+        }
 
         let renderCmp = this.componentFactory.CreateMeshComponent(args);
 

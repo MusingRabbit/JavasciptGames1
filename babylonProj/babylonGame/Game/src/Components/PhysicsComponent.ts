@@ -34,7 +34,32 @@ export class PhysicsComponent extends Component
         let mass = this.mass;
         let restitution = this.restitution;
 
+
+        rc.mesh.checkCollisions = true;
+        rc.mesh.isPickable = true;
+        
         this.aggregate = new PhysicsAggregate(rc.mesh, this.shapeType, { mass, restitution}, rc.mesh.getScene());
+        
+    }
+
+    public EnableCollisions()
+    {
+        let rc = this.gameObject.GetComponent(MeshComponent);
+
+        if (rc)
+        {
+            rc.mesh.checkCollisions = true;
+        }
+    }
+
+    public DisableCollisions() 
+    {
+        let rc = this.gameObject.GetComponent(MeshComponent);
+
+        if (rc)
+        {
+            rc.mesh.checkCollisions = false;
+        }
     }
 
     public Update(dt: number): void {

@@ -18,6 +18,11 @@ export class System
         return reinitialise || this.canInitialise();
     }
 
+    public Clear()
+    {
+        this.gameObjs.clear();
+    }
+
     private canInitialise()
     {
         if (this.initialised || this.initialising)

@@ -66,7 +66,7 @@ export class TextureRepository
                 result.texture = txr;
                 result.diffuse = txr;
                 result.normal = new Texture(this.txrDir + pi.name + "_norm.png");
-                
+
                 this.notifyTextureLoadSuccess(pi, result);
             });
 

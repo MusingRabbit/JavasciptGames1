@@ -21,7 +21,7 @@ export class CreateMeshComponentArgs
     material? : Material;
     txrData? : TextureData;
     shape : ShapeType;
-    tessalation? : number = 8;
+    tessalation? : number | null = null;
 
     constructor()
     {
@@ -101,7 +101,7 @@ export class ComponentFactory
                     result.SetMesh(capsule);
                     break;
                 case ShapeType.Ground:
-                    let ground = this.sceneObjBuilder.CreateGround(args.name + "_ground", transform, 10);
+                    let ground = this.sceneObjBuilder.CreateGround(args.name + "_ground", transform, args?.tessalation ?? 1);
                     result.SetMesh(ground);
                     break;
                 case ShapeType.Plane:
@@ -109,11 +109,11 @@ export class ComponentFactory
                     result.SetMesh(plane);
                     break;
                 case ShapeType.TiledPlane:
-                    let tilePlane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", transform, true , args.tessalation);
+                    let tilePlane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", transform, true , args?.tessalation ?? 10);
                     result.SetMesh(tilePlane);
                     break;
                 case ShapeType.Sphere:
-                    let sphere = this.sceneObjBuilder.CreateSphere(args.name + "_sphere", transform, args.tessalation);
+                    let sphere = this.sceneObjBuilder.CreateSphere(args.name + "_sphere", transform, args?.tessalation ?? 32);
                     result.SetMesh(sphere);
                     break;
             }

@@ -67,7 +67,9 @@ export class MeshComponent extends Component
                 {
                     mat.diffuseTexture = data.texture;
                     mat.ambientTexture = data.texture;
-                    mat.bumpTexture = data.normal;
+
+                    if (!data.normal.loadingError)
+                        mat.bumpTexture = data.normal;
                 }
             }
         }

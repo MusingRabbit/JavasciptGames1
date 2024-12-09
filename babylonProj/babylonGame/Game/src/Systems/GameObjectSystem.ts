@@ -1,4 +1,4 @@
-import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix, Mesh, Material } from "@babylonjs/core";
+import { SpotLight, DirectionalLight, PointLight, Vector3, Matrix, Mesh, Material, AbstractMesh } from "@babylonjs/core";
 
 import { System } from "./System";
 import { LiteEvent } from "../Event/LiteEvent";
@@ -30,6 +30,21 @@ export class GameObjectSystem extends System {
         super.Update(dt);
     }
     
+    public GetGameObjectByMesh(mesh : AbstractMesh) : GameObject | null
+    {
+        for (let obj of this.gameObjs.values())
+        {
+            let mc = obj.GetComponent(MeshComponent);
+            
+            if (mc?.mesh.id == mesh.id)
+            {
+                return obj;
+            }
+        }
+
+        return null;
+    }
+
     private processGameObjects(dt : number): void {
         for (let obj of this.gameObjs.values()) {
             this.updateComponents(dt, obj);

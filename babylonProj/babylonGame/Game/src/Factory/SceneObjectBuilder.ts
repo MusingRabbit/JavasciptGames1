@@ -117,18 +117,19 @@ export default class SceneObjectBuilder {
     result.sideOrientation = Material.CounterClockWiseSideOrientation;
     result.maxSimultaneousLights = 6;
     result.ambientColor = Color3.White();
-    result.emissiveColor = Color3.White();
+    //result.emissiveColor = Color3.White();
     result.specularPower = 8.0;
     return result;
   }
 
-  public CreateGround(name: string, transform : Transform, tessalate : number = 8) {
+  public CreateGround(name: string, transform : Transform, tessalate? : number) {
 
-    let grid = {h : tessalate, w : tessalate};
+    let tessalation = tessalate ?? 1;
+    let grid = {h : tessalation, w : tessalation};
     let result = MeshBuilder.CreateTiledGround(name, { xmin: -3, zmin: -3, xmax: 3, zmax: 3, subdivisions : grid}, this.scene);
     result.position = transform.Position;
     result.receiveShadows = true;
-    result.material = this.createMultiMaterial("mat_" + name, tessalate);
+    result.material = this.createMultiMaterial("mat_" + name, tessalation);
     this.createTiledSubmesh(result, grid.w, grid.h);
     return result;
   }

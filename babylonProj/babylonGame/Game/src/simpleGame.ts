@@ -8,8 +8,6 @@ import { LightType, ShapeType } from "./Global";
 import { MeshComponent } from "./Components/MeshComponent";
 import { DebugTransform } from "./Components/DebugTransform";
 
-const TEMPLE_OBJ_FILEPATH  = "ruinedTemple.glb";
-
 export class SimpleGame extends Game
 {
     //gameObj1 : GameObject;
@@ -46,7 +44,7 @@ export class SimpleGame extends Game
 
     public Load() : void 
     {
-        this.dataManager.QueueLoadMesh(TEMPLE_OBJ_FILEPATH);
+        this.dataManager.QueueLoadMesh("ruinedTemple.glb");
         this.dataManager.QueueLoadTextures(["rock_wall_01.jpg", "stone_wall_01.jpg", "grass.jpg"]);
 
         super.Load();
@@ -85,11 +83,11 @@ export class SimpleGame extends Game
 
     private createTemple()
     {
-        let meshData = this.dataManager.GetMesh(TEMPLE_OBJ_FILEPATH);
+        let meshData = this.dataManager.GetMesh("ruinedTemple.glb");
 
         if (meshData)
         {
-            this.templeObj = this.objFactory.CreateMeshGameObjects(new Vector3(0,0,0), meshData);
+            this.templeObj = this.objFactory.CreateMeshGameObjects(new Vector3(0,-1,0), meshData);
             this.templeObj.transform.Scale = new Vector3(100,100,100);
         }
     }

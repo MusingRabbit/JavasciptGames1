@@ -10,11 +10,11 @@ class ShadowGeneratorArgs
     shadowMapSize : number = 4096;
     darkness : number = 0.2;
     useBlurExponentialShadowMap : boolean = true;
-    blurScale : number = 2;
+    blurScale : number = 8;
     blurBoxOffset : number = 1;
     useKernelBlur : boolean = true;
     blurKernel : number = 64;
-    bias : number = 0;
+    bias : number = 0.1;
 }
 
 class LightData

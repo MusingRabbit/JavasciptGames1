@@ -14,30 +14,32 @@ import { DataManager } from "./Data/DataManager";
 import { GameObject } from "./GameObjects/gameObject";
 import { RenderSystem } from "./Systems/RenderSystem";
 import { PhysicsSystem } from "./Systems/PhysicsSystem";
+import { InputSystem } from "./Systems/InputSystem";
 
 export class Game 
 {
     
     private static _activeScene : Scene;
 
-    engine : Engine;
-    scene : Scene;
-    sceneBuilder : SceneObjectBuilder;
-    gameObjSys : GameObjectSystem;
-    objFactory : GameObjectFactory;
-    lightingSys : LightingSystem;
-    renderSys : RenderSystem;
-    physicsSys : PhysicsSystem;
+    protected engine : Engine;
+    protected scene : Scene;
+    protected sceneBuilder : SceneObjectBuilder;
+    protected gameObjSys : GameObjectSystem;
+    protected objFactory : GameObjectFactory;
+    protected lightingSys : LightingSystem;
+    protected renderSys : RenderSystem;
+    protected physicsSys : PhysicsSystem;
+    protected inputSys : InputSystem;
 
-    showDebug : boolean;
+    protected showDebug : boolean;
 
-    dataManager : DataManager;
+    protected dataManager : DataManager;
 
-    currTime : number;
+    protected currTime : number;
 
-    isRunning : boolean;
+    protected isRunning : boolean;
 
-    isInitialised : boolean;
+    protected isInitialised : boolean;
 
     public static get CurrentScene() : Scene { return Game._activeScene; }
 
@@ -52,6 +54,7 @@ export class Game
         this.lightingSys = new LightingSystem();
         this.renderSys = new RenderSystem();
         this.physicsSys = new PhysicsSystem(this.scene);
+        this.inputSys = new InputSystem(this.scene);
 
         this.isRunning = false;
 
@@ -86,6 +89,7 @@ export class Game
         this.lightingSys.Initialise();
         this.gameObjSys.Initialise();
         this.renderSys.Initialise();
+        this.inputSys.Initialise();
 
         return this.systemsInitialised();
     }
@@ -95,7 +99,8 @@ export class Game
         return this.physicsSys.isReady() && 
         this.lightingSys.isReady() && 
         this.gameObjSys.isReady() && 
-        this.renderSys.isReady();
+        this.renderSys.isReady() &&
+        this.inputSys.isReady();
     }
 
     public Run() : boolean
@@ -145,6 +150,7 @@ export class Game
     {
         this.gameObjSys.Update(dt);
         this.physicsSys.Update(dt);
+        this.inputSys.Update(dt);
     }
 
     public Render(dt : number) : void
@@ -170,6 +176,22 @@ export class Game
         this.gameObjSys.AddGameObject(gameObj);
         this.lightingSys.AddGameObject(gameObj);
         this.physicsSys.AddGameObject(gameObj);
+    }
+
+    public GetScene()
+    {
+        return this.scene;
+    }
+
+    public Clear()
+    {
+        this.scene.dispose();
+        this.isInitialised = false;
+        this.gameObjSys.Clear();
+        this.lightingSys.Clear();
+        this.inputSys.Clear();
+        this.renderSys.Clear();
+        this.physicsSys.Clear();
     }
 }
 
