@@ -83,9 +83,8 @@ export class MeshComponent extends Component
                 if (mat instanceof StandardMaterial)
                 {
                     mat.diffuseTexture = data.texture;
-                    //mat.ambientTexture = data.texture;
 
-                    if (!data.normal.loadingError)
+                    if (!data.normal?.loadingError)
                         mat.bumpTexture = data.normal;
                 }
             }
@@ -93,7 +92,9 @@ export class MeshComponent extends Component
         else if (material instanceof StandardMaterial)
         {
             material.diffuseTexture = data.texture;
-            material.bumpTexture = data.normal;
+            
+            if (!data.normal.loadingError)
+                material.bumpTexture = data.normal;
         }
     }
 }

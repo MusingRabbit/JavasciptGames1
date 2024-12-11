@@ -1,4 +1,4 @@
-import { MultiPointerScaleBehavior, Observable, PointerEventTypes, PointerInfo, Scene, Vector2 } from "@babylonjs/core";
+import { KeyboardEventTypes, KeyboardInfo, MultiPointerScaleBehavior, Observable, PointerEventTypes, PointerInfo, Scene, Vector2 } from "@babylonjs/core";
 import { System } from "./System";
 
 export class MouseState
@@ -35,15 +35,61 @@ export class MouseState
     }
 }
 
+export class KeyboardState
+{
+    private keyMap : Map<string, boolean>;
+
+    constructor()
+    {
+        this.keyMap = new Map<string,boolean>();
+    }
+
+    public SetKeyDown(key : string)
+    {
+      this.keyMap.set(key, true);
+    }
+
+    public SetKeyUp(key : string)
+    {
+      this.keyMap.set(key, false);
+    }
+
+    public GetKeyDown(key : string) : boolean
+    {
+        return this.keyMap.has(key) && (this.keyMap.get(key) ?? false);
+    }
+
+    public GetKeyUp(key : string) : boolean
+    {
+        return !this.keyMap.has(key) || !this.keyMap.get(key);
+    }
+
+    public Copy() : KeyboardState
+    {
+      let result = new KeyboardState();
+
+      for (var key in this.keyMap.keys())
+      {
+        result.keyMap.set(key, this.keyMap.get(key) ?? false);
+      }
+
+      return result;
+    }
+}
+
 export class InputSystem extends System
 {
     private scene : Scene;
     private mouseState : MouseState;
+    private kbState : KeyboardState;
+    private oldKbState : KeyboardState;
 
     constructor(scene : Scene)
     {
         super();
         this.mouseState = new MouseState();
+        this.kbState = new KeyboardState();
+        this.oldKbState = new KeyboardState();
         this.scene = scene;
     }
 
@@ -76,6 +122,21 @@ export class InputSystem extends System
             }
         });
 
+
+        this.scene.onKeyboardObservable.add((keyInfo : KeyboardInfo) => {
+
+            switch (keyInfo.type)
+            {
+              case KeyboardEventTypes.KEYDOWN:
+                this.kbState.SetKeyDown(keyInfo.event.key);
+                break;
+              case KeyboardEventTypes.KEYUP:
+                this.kbState.SetKeyUp(keyInfo.event.key);
+                break;
+            }
+
+        });
+
         this.initialised = true;
         return this.initialised;
     }
@@ -85,7 +146,26 @@ export class InputSystem extends System
         return this.mouseState.Copy();
     }
 
+    public GetKeyboardState() : KeyboardState
+    {
+        return this.kbState.Copy();
+    }
+
+    public IsKeyDown(key : string)
+    {
+        return this.kbState.GetKeyDown(key);
+    }
+
+    public IsKeyTapped(key : string)
+    {
+        let oldKeyDown = this.oldKbState.GetKeyDown(key);
+        let keyDown = this.kbState.GetKeyDown(key);
+
+        return oldKeyDown == true && keyDown == false;
+    }
+
     public Update(dt: number): void {
+        this.oldKbState = this.kbState.Copy();
         this.mouseState.Reset();
     }
 }

@@ -1,4 +1,4 @@
-import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager, GlowLayer } from "@babylonjs/core";
+import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager, GlowLayer, StandardMaterial } from "@babylonjs/core";
 import { MathHelper } from "./Util/Math/mathHelper";
 import { QuaternionHelper } from "./Util/Math/QuaternionHelper";
 import { Game } from "./game";
@@ -32,7 +32,7 @@ export class SimpleGame extends Game
     public Initialise(): boolean {
         if (super.Initialise())
         {
-            //this.renderSys.EnableGlowLayer();
+            this.renderSys.EnableGlowLayer();
             this.setupBasicScene();
 
             this.isInitialised = true;
@@ -172,6 +172,8 @@ export class SimpleGame extends Game
         if (grc)
         {
             grc.SetTextureData(grassTxr);
+            let mat = grc.GetMaterial<StandardMaterial>();
+            mat.emissiveColor = Color3.White();
         }
 
         //let brc = this.gameObj1.GetComponent(MeshComponent);

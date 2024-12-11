@@ -44,15 +44,26 @@ export class LightingGame extends Game
         ground.transform.Scale = new Vector3(2,2,2);
 
 
+        let sMc = sphere.GetComponent(MeshComponent);
+        let sMat = sMc!.GetMaterial<StandardMaterial>();
+        sMat.ambientColor = Color3.White();
+        sMat.diffuseColor = Color3.White();
+        sMat.specularColor = Color3.White();
+        sMat.specularPower = 0.4;
+
         let bMc = box.GetComponent(MeshComponent);
-        let bMat = bMc?.GetMaterial() as StandardMaterial;
+        let bMat = bMc!.GetMaterial<StandardMaterial>();
         bMat.ambientColor = Color3.White();
         bMat.diffuseColor = Color3.White();
+        bMat.specularColor = Color3.White();
+        bMat.specularPower = 0.4;
 
         let gMc = ground.GetComponent(MeshComponent);
-        let mat = gMc?.GetMaterial() as StandardMaterial;
+        let mat = gMc!.GetMaterial<StandardMaterial>();
         mat.ambientColor = Color3.White();
         mat.diffuseColor = Color3.White();
+        mat.specularColor = Color3.White();
+        mat.specularPower = 0.4;
 
         this.lightingSys.Initialise();
     }

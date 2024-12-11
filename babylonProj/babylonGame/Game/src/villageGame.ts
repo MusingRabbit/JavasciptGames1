@@ -150,6 +150,7 @@ export class VillageGame extends Game
             mat1.transparencyMode = Material.MATERIAL_ALPHABLEND;
             mat1.diffuseTexture!.hasAlpha = true;
             mat1.useAlphaFromDiffuseTexture = true;
+            mat1.specularColor = new Color3(0,0.1,0);
         }
 
         if (mc2)
@@ -158,6 +159,7 @@ export class VillageGame extends Game
             mat2.transparencyMode = Material.MATERIAL_ALPHABLEND;
             mat2.diffuseTexture!.hasAlpha = true;
             mat2.useAlphaFromDiffuseTexture = true;
+            mat2.specularColor = new Color3(0.05,0.1,0.01);
         }
 
         return obj1;

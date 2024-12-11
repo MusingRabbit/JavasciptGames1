@@ -118,8 +118,8 @@ export default class SceneObjectBuilder {
     for (var i = 0; i < size; i++)
     {
       let mat = this.CreateDefaultMaterial(name + i);
-      mat.maxSimultaneousLights = 2;
-      result.subMaterials.push(this.CreateDefaultMaterial(name + i));
+      mat.maxSimultaneousLights = 6;
+      result.subMaterials.push(mat);
     }
     
 
@@ -148,8 +148,8 @@ export default class SceneObjectBuilder {
     result.maxSimultaneousLights = 6;
     //result.ambientColor = Color3.White();
     //result.emissiveColor = Color3.White();
-    result.specularColor = Color3.Black();
-    result.specularPower = 0.8;
+    result.specularColor = Color3.White();
+    result.specularPower = 16;
     return result;
   }
 

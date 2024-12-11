@@ -8,6 +8,7 @@ import { Game } from './game';
 import { Button, AdvancedDynamicTexture } from "@babylonjs/gui/2D";
 import { LightingGame } from './lightingGame';
 import { VillageGame } from './villageGame';
+import { MotionGame } from './MotionGame/motionGame';
 
 class createButtonArgs
 {
@@ -47,6 +48,11 @@ function startGame(gameName : string) : Game | null
             case ("village") : 
             {
                 game = new VillageGame(eng);
+                break;
+            }
+            case ("motion") : 
+            {
+                game = new MotionGame(eng);
                 break;
             }
         }
@@ -108,24 +114,28 @@ function createGui(scene : Scene)
     let btn2Pos = new Vector2(200 * screenWidthRatio, 140 * screenHeightRatio);
     let btn3Pos = new Vector2(400 * screenWidthRatio, 140 * screenHeightRatio);
     let btn4Pos = new Vector2(-400 * screenWidthRatio, 140 * screenHeightRatio);
+    let btn5Pos = new Vector2(600 * screenWidthRatio, 140 * screenHeightRatio);
 
     let btnReset = createButton({name : "btnReset", text : "Reset", pos : btnPos, dimensions : buttonDim});
     let btnTemple = createButton({name : "btnTemple", text : "Temple", pos : btn1Pos, dimensions : buttonDim});
     let btnPhysics = createButton({name : "btnPhysics", text : "Physics", pos : btn2Pos, dimensions : buttonDim});
     let btnLighting = createButton({name : "btnLighting", text : "Lighting", pos : btn3Pos, dimensions : buttonDim});
     let btnVillage = createButton({name : "btnVillage", text : "Village", pos : btn4Pos, dimensions : buttonDim});
+    let btnMotion = createButton({name : "btnMotion", text : "Motion", pos : btn5Pos, dimensions : buttonDim});
 
     btnReset.onPointerClickObservable.add(x => { selectGameAndStart(currGameName); });
     btnTemple.onPointerClickObservable.add(x => { selectGameAndStart("temple"); });
     btnPhysics.onPointerClickObservable.add(x => {selectGameAndStart("physics")});
     btnLighting.onPointerClickObservable.add(x => {selectGameAndStart("lighting")});
-    btnVillage.onPointerClickObservable.add(x => {selectGameAndStart("lighting")});
+    btnVillage.onPointerClickObservable.add(x => {selectGameAndStart("village")});
+    btnMotion.onPointerClickObservable.add(x => {selectGameAndStart("motion")});
 
     advTexture.addControl(btnReset);
     advTexture.addControl(btnTemple);
     advTexture.addControl(btnPhysics);
     advTexture.addControl(btnLighting);
     advTexture.addControl(btnVillage);
+    advTexture.addControl(btnMotion);
 
     return advTexture;
 }
@@ -142,7 +152,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const gameName = urlParams.get('name');
 
 let currGame : Nullable<Game> = null;
-let currGameName = "village";
+let currGameName = "motion";
 
 selectGameAndStart(currGameName);
 
