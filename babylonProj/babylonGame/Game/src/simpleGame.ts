@@ -24,7 +24,7 @@ export class SimpleGame extends Game
     
 
     constructor(engine : Engine) {
-        super(engine);
+        super(engine, "./assets/temple/");
 
         this.counter = 0;
     }
@@ -87,7 +87,7 @@ export class SimpleGame extends Game
 
         if (meshData)
         {
-            this.templeObj = this.objFactory.CreateMeshGameObjects(new Vector3(0,-1,0), meshData);
+            this.templeObj = this.objFactory.CreateMeshGameObjects(new Vector3(0,0,0), meshData);
             this.templeObj.transform.Scale = new Vector3(100,100,100);
         }
     }
@@ -161,8 +161,8 @@ export class SimpleGame extends Game
         this.setupBasicSceneLighting();
         this.createTemple();
 
-        this.ground = this.objFactory.CreateShapeGameObject(new Vector3(0,0,0), ShapeType.Ground);
-        //this.ground.transform.rotation = Quaternion.FromEulerAngles(MathHelper.DegToRad(90),0,0);
+        this.ground = this.objFactory.CreateShapeGameObject(new Vector3(0,0,0), ShapeType.TiledPlane);
+        this.ground.transform.Rotation = Quaternion.FromEulerAngles(MathHelper.DegToRad(90),0,0);
         this.ground.transform.Scale = new Vector3(500,500,500);
 
         let grassTxr = this.dataManager.GetTexture("grass.jpg");

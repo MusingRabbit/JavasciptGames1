@@ -33,14 +33,14 @@ export class DataManager
 
     public get OnLoadCompleted() { return this.onLoadCompleted.expose(); }
 
-    constructor(scene : Scene)
+    constructor(textureDir : string, modelDir : string, scene : Scene)
     {
         this.meshFileQueue = new Map<string, QueueData>();
         this.txrFileQueue = new Map<string, QueueData>();
         
         this.scene = scene;
-        this.meshRepo = new MeshRepository();
-        this.txrRepo = new TextureRepository(5000);
+        this.meshRepo = new MeshRepository(modelDir);
+        this.txrRepo = new TextureRepository(textureDir, 5000);
 
         this.meshRepo.OnLoadCompleted.on((data) => {
             if (data)
@@ -89,6 +89,11 @@ export class DataManager
         {
             this.QueueLoadTexture(path);
         }
+    }
+
+    public QueueLoadSprites(filePaths: string[])
+    {
+        
     }
 
     public QueueLoadMesh(filePath : string)

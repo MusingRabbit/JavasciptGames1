@@ -1,4 +1,4 @@
-import { ArcRotateCamera, Color3, DirectionalLight, Engine, Light, Matrix, Quaternion, Vector3 } from "@babylonjs/core";
+import { ArcRotateCamera, Color3, DirectionalLight, Engine, Light, Matrix, Quaternion, StandardMaterial, Vector3 } from "@babylonjs/core";
 import { Game } from "./game";
 import { LightType, ShapeType } from "./Global";
 import { LightComponent } from "./Components/LightComponent";
@@ -11,7 +11,7 @@ export class LightingGame extends Game
 {
     constructor(engine : Engine)
     {
-        super(engine);
+        super(engine, "./assets/");
     }
 
     public Initialise(): boolean {
@@ -35,19 +35,32 @@ export class LightingGame extends Game
     {
         let camera = this.createArcRotateCamera();
 
-        let box = this.objFactory.CreateShapeGameObject(new Vector3(0,3), ShapeType.Box);
-        let sphere = this.objFactory.CreateShapeGameObject(new Vector3(0,1), ShapeType.Sphere);
+        let box = this.objFactory.CreateShapeGameObject(new Vector3(0,0.45), ShapeType.Box);
+        let sphere = this.objFactory.CreateShapeGameObject(new Vector3(0, 3), ShapeType.Sphere);
         let ground = this.objFactory.CreateShapeGameObject(Vector3.Zero(), ShapeType.Ground);
 
         this.setupLighting();
 
         ground.transform.Scale = new Vector3(2,2,2);
 
+
+        let bMc = box.GetComponent(MeshComponent);
+        let bMat = bMc?.GetMaterial() as StandardMaterial;
+        bMat.ambientColor = Color3.White();
+        bMat.diffuseColor = Color3.White();
+
+        let gMc = ground.GetComponent(MeshComponent);
+        let mat = gMc?.GetMaterial() as StandardMaterial;
+        mat.ambientColor = Color3.White();
+        mat.diffuseColor = Color3.White();
+
         this.lightingSys.Initialise();
     }
 
     private setupLighting()
     {
+        let aLight = this.objFactory.CreateLightGameObject(new Vector3(10, 30, 10), new Color3(0.2,0.1,0.2), LightType.Hemispheric);
+        
         let dLight = this.objFactory.CreateLightGameObject(new Vector3(20, 30, 10), new Color3(0.8, 0.1, 0.3), LightType.Directional);
         this.setupDrectionalLight(dLight);
 
@@ -60,10 +73,12 @@ export class LightingGame extends Game
         let mtxLookAt1 = Matrix.LookAtLH(dLight.transform.Position, Vector3.Zero(), Vector3.Up());
         let mtxLookAt2 = Matrix.LookAtLH(dLight2.transform.Position, Vector3.Zero(), Vector3.Up());
         let mtxLookAt3 = Matrix.LookAtLH(dLight3.transform.Position, Vector3.Zero(), Vector3.Up());
+        let mtxLookAt4 = Matrix.LookAtLH(aLight.transform.Position, Vector3.Zero(), Vector3.Up());
 
         dLight.transform.Rotation = Quaternion.FromRotationMatrix(mtxLookAt1.invert());
         dLight2.transform.Rotation = Quaternion.FromRotationMatrix(mtxLookAt2.invert());
         dLight3.transform.Rotation = Quaternion.FromRotationMatrix(mtxLookAt3.invert());
+        aLight.transform.Rotation = Quaternion.FromRotationMatrix(mtxLookAt4.invert());
     }
 
     private setupDrectionalLight(gameObj : GameObject)

@@ -1,21 +1,48 @@
-import { Mesh, PhysicsAggregate, PhysicsShape, PhysicsShapeType, TubeBuilder, Vector3 } from "@babylonjs/core";
+import { Mesh, PhysicsAggregate, PhysicsBody, PhysicsMotionType, PhysicsShape, PhysicsShapeType, TubeBuilder, Vector3 } from "@babylonjs/core";
 import { Component } from "./component";
 import { GameObject } from "../GameObjects/gameObject";
 import { MeshComponent } from "./MeshComponent";
+import { ShapeType } from "@babylonjs/havok";
 
 export class PhysicsComponent extends Component
 {
+    body : PhysicsBody;
     aggregate : PhysicsAggregate;
     shapeType : PhysicsShapeType;
+    motionType : number;
     mass : number;
     restitution : number;
     mesh : Mesh;
 
-    constructor()
+    isStatic : boolean;
+
+    constructor(motionType? : PhysicsMotionType, shapeType? : PhysicsShapeType, mass?:number, restitution?: number)
     {
         super();
 
-        this.shapeType = PhysicsShapeType.MESH;
+        if (motionType)
+        {
+            this.motionType = motionType;
+        }
+        else 
+        {
+            this.motionType = PhysicsMotionType.DYNAMIC;
+        }
+
+
+        if (shapeType)
+        {
+            this.shapeType = shapeType;
+        }
+        else 
+        {
+            this.shapeType = PhysicsShapeType.MESH;
+        }
+
+        this.mass = mass ?? 1;
+        this.restitution = restitution ?? 1;
+        
+        this.isStatic = (this.motionType == PhysicsMotionType.STATIC);
     }
 
     public SetGameObject(gameObject: GameObject): void {
@@ -38,7 +65,11 @@ export class PhysicsComponent extends Component
         rc.mesh.checkCollisions = true;
         rc.mesh.isPickable = true;
         
-        this.aggregate = new PhysicsAggregate(rc.mesh, this.shapeType, { mass, restitution}, rc.mesh.getScene());
+        this.aggregate = new PhysicsAggregate(rc.mesh, this.shapeType, { mass, restitution }, rc.mesh.getScene());
+
+        this.aggregate.body.setMotionType(this.motionType);
+
+        this.body = this.aggregate.body;
         
     }
 
@@ -68,22 +99,32 @@ export class PhysicsComponent extends Component
 
     public ApplyForce(force : Vector3)
     {
-        this.aggregate.body.applyForce(force, this.mesh.absolutePosition);
+        if (this.isStatic)
+        {
+            return;
+        }
+        
+        this.body.applyForce(force, this.mesh.absolutePosition);
     }
 
     public ApplyImpulse(force : Vector3)
     {
-        this.aggregate.body.applyImpulse(force, this.mesh.absolutePosition);
+        if (this.isStatic)
+        {
+            return;
+        }
+
+        this.body.applyImpulse(force, this.mesh.absolutePosition);
     }
 
     public Disable()
     {
-        this.aggregate.body.disablePreStep = true;
+        this.body.disablePreStep = true;
     }
 
     public Enable()
     {
-        this.aggregate.body.disablePreStep = false;
+        this.body.disablePreStep = false;
     }
 
 }

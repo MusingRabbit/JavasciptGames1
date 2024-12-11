@@ -18,7 +18,6 @@ import { InputSystem } from "./Systems/InputSystem";
 
 export class Game 
 {
-    
     private static _activeScene : Scene;
 
     protected engine : Engine;
@@ -41,9 +40,12 @@ export class Game
 
     protected isInitialised : boolean;
 
+    protected textureAssetsDirectory : string;
+    protected modelAssetsDirectory : string;
+
     public static get CurrentScene() : Scene { return Game._activeScene; }
 
-    constructor(engine : Engine)
+    constructor(engine : Engine, assetDirectory : string)
     {
         this.engine = engine;
         this.scene = new Scene(this.engine);
@@ -58,14 +60,14 @@ export class Game
 
         this.isRunning = false;
 
-        this.dataManager = new DataManager(this.scene);
-
         this.objFactory.OnCreated.on((gameObj?) => { 
             if (gameObj != null)
             {
                 this.AddGameObject(gameObj);
             }
          });
+
+         this.dataManager = new DataManager(assetDirectory + "textures/", assetDirectory + "models/", this.scene);
 
          this.Load();
     }
@@ -159,7 +161,6 @@ export class Game
         this.scene.render();
     }
     
-
     public ShowDebugLayer() {
         this.scene.debugLayer.show();
         this.showDebug = true;

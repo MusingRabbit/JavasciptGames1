@@ -1,9 +1,9 @@
-import { Color3, Material, Matrix, Mesh, Scene, Texture, Vector3 } from "@babylonjs/core";
+import { Color3, Material, Matrix, Mesh, Scene, Texture, Vector3, Vector4 } from "@babylonjs/core";
 
 import SceneObjectBuilder from "./SceneObjectBuilder";
 import { TextureData } from "../Data/TextureRepository";
 import { Transform } from "../Components/Transform";
-import { LightType, ShapeType } from "../Global";
+import { LightType, MeshOrientation, ShapeType } from "../Global";
 import { MeshComponent } from "../Components/MeshComponent";
 import { LightComponent } from "../Components/LightComponent";
 
@@ -13,19 +13,22 @@ export class CreateCameraComponentArgs
     transform : Transform;
 }
 
-export class CreateMeshComponentArgs
-{
-    name : string;
+export class CreateGameObjectArgs
+{   
+    name? : string;
     transform? : Transform;
     mesh? : Mesh;
     material? : Material;
     txrData? : TextureData;
-    shape : ShapeType;
+    shape? : ShapeType;
+    orientation? : MeshOrientation;
     tessalation? : number | null = null;
+    faceUV? : Vector4[];
+    hideMesh? : boolean;
 
     constructor()
     {
-        this.name = "component";
+        this.name = "obj";
         this.shape = ShapeType.Box;
     }
 }
@@ -71,7 +74,7 @@ export class ComponentFactory
         // TODO:
     }
 
-    public CreateMeshComponent(args : CreateMeshComponentArgs)
+    public CreateMeshComponent(args : CreateGameObjectArgs)
     {
         let result = new MeshComponent();
         let transform = new Transform();
@@ -87,13 +90,18 @@ export class ComponentFactory
         {
             this.scene.addMesh(args.mesh, true);
             result.SetMesh(args.mesh);
+
+            if (!result.mesh.material)
+            {
+                args.material = this.sceneObjBuilder.CreateDefaultMaterial(args.name + "_mat");
+            }
         }
         else
         {
             switch(args.shape)
             {
                 case ShapeType.Box:
-                    let box = this.sceneObjBuilder.CreateBox(args.name + "_box", transform);
+                    let box = this.sceneObjBuilder.CreateBox(args.name + "_box", transform, args);
                     result.SetMesh(box);
                     break;
                 case ShapeType.Capsule:
@@ -105,18 +113,28 @@ export class ComponentFactory
                     result.SetMesh(ground);
                     break;
                 case ShapeType.Plane:
-                    let plane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", transform, false);
+                    let plane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", transform, false, undefined, args);
                     result.SetMesh(plane);
                     break;
                 case ShapeType.TiledPlane:
-                    let tilePlane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", transform, true , args?.tessalation ?? 10);
+                    let tilePlane = this.sceneObjBuilder.CreatePlane(args.name + "_plane", transform, true , args?.tessalation ?? 10, args);
                     result.SetMesh(tilePlane);
                     break;
                 case ShapeType.Sphere:
                     let sphere = this.sceneObjBuilder.CreateSphere(args.name + "_sphere", transform, args?.tessalation ?? 32);
                     result.SetMesh(sphere);
                     break;
+                case ShapeType.Cylinder:
+                    let cylinder = this.sceneObjBuilder.CreateCylinder(args.name + "_cylinder", transform, args?.tessalation ?? 8);
+                    result.SetMesh(cylinder);
+                    break;
             }
+        }
+
+
+        if (args.hideMesh)
+        {
+            result.mesh.isVisible = false;
         }
 
         if (args.material)

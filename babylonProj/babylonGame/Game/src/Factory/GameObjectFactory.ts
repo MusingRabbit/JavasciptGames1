@@ -2,7 +2,7 @@ import { Color3, DirectionalLight, HemisphericLight, Mesh, PointLight, Scene, Sp
 import { GameObjectSystem } from "../Systems/GameObjectSystem";
 import SceneObjectBuilder from "./SceneObjectBuilder";
 
-import { ComponentFactory, CreateMeshComponentArgs } from "./ComponentFactory";
+import { ComponentFactory, CreateGameObjectArgs } from "./ComponentFactory";
 import { LiteEvent } from "../Event/LiteEvent";
 import { MeshData } from "../Data/MeshRepository";
 import { Transform } from "../Components/Transform";
@@ -94,7 +94,7 @@ export class GameObjectFactory
         let transform = new Transform();
         transform.Position = position;
 
-        let result = this.CreateGameObject(meshData.name, transform);
+        let result = this.CreateShapeGameObject(position, ShapeType.Sphere, {name : "rootObj", hideMesh : true});
 
         let rndCmp = this.componentFactory.CreateMeshComponent({name : meshData.name + "_mesh", shape : ShapeType.Sphere});
         let mat = rndCmp.GetMaterial();
@@ -123,7 +123,7 @@ export class GameObjectFactory
 
         let result = this.CreateGameObject(name, transform);
 
-        let args = new CreateMeshComponentArgs();
+        let args = new CreateGameObjectArgs();
         args.name = "cmp";
         args.mesh = mesh;
 
@@ -137,22 +137,20 @@ export class GameObjectFactory
     }
 
 
-    public CreateShapeGameObject(position : Vector3, shape: ShapeType, name? : string, tessalation? : number) : GameObject
+    public CreateShapeGameObject(position : Vector3, shape: ShapeType, args : CreateGameObjectArgs = new CreateGameObjectArgs()) : GameObject
     {
-        let objName =  name ?? "obj" + ShapeType[shape];
+        let objName =  args.name + ShapeType[shape];
         let trans = new Transform();
         trans.Position = position;
 
         let result = this.CreateGameObject(objName, trans);
 
-        let args = new CreateMeshComponentArgs();
-        args.name = objName;
-        args.shape = shape;
-
-        if (tessalation)
+        if (!args.name)
         {
-            args.tessalation = tessalation;
+            args.name = objName;
         }
+
+        args.shape = shape;
 
         let renderCmp = this.componentFactory.CreateMeshComponent(args);
 

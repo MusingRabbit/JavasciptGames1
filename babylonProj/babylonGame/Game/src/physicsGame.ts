@@ -1,4 +1,4 @@
-import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager, GlowLayer, RandomNumberBlock, PhysicsShapeType, StandardMaterial } from "@babylonjs/core";
+import { Engine, Color3, Quaternion, Vector2, Vector3, Light, HemisphericLight, DirectionalLight, FreeCamera, Matrix, DebugLayer, Mesh, CreateLines, MeshBuilder, LinesMesh, Color4, SpotLight, LightGizmo, GizmoManager, GlowLayer, RandomNumberBlock, PhysicsShapeType, StandardMaterial, PhysicsImpostor, PhysicsMotionType } from "@babylonjs/core";
 
 import { Game } from "./game";
 import { GameObject } from "./GameObjects/gameObject";
@@ -19,7 +19,7 @@ export class PhysicsGame extends Game
     rng : RandomNumberBlock;
     
     constructor(engine : Engine) {
-        super(engine);
+        super(engine, "./assets/");
 
         this.rng = new RandomNumberBlock("rng");
     }
@@ -74,22 +74,88 @@ export class PhysicsGame extends Game
         this.createCamera();
         //this.setupSceneLighting();
         this.createObjects(2000);
-        this.createBoundary(Vector3.Zero(), 100);
+        this.createBoundary(Vector3.Zero(), 200);
     }
 
+    private confBoxVisability(boxObj : GameObject)
+    {
+        let mc = boxObj.GetComponent(MeshComponent) as MeshComponent;
+        mc.mesh.visibility = 0;                                         // Turn to 1 to see bounding boxes for debugging purposes...
+        let mat = mc.GetMaterial() as StandardMaterial;
+        mat.ambientColor = new Color3(0.2,0.2,0.3);
+        mat.emissiveColor = new Color3(0.05,0.05,0.075);
+        mat.diffuseColor = mat.ambientColor;
+    }
+
+    // Creates a boundary around the scene to prevent objects from escaping.
+    // Sadly the boundary doesnt work - and objects just pass straight through it.
+    // Not sure what the problem is.
     private createBoundary(position : Vector3, size : number)
     {
         let rTrans = new Transform();
         rTrans.Position = position;
         let lRoot = this.objFactory.CreateGameObject("objBoundary", rTrans)
 
-        let l = this.objFactory.CreateShapeGameObject(new Vector3(100, 0, 0), ShapeType.Box, "objBoundary_L");
+        let scale = size * 2;
 
+        let lbox = this.objFactory.CreateShapeGameObject(new Vector3(size, 0, 0), ShapeType.Box, {name : "objBoundary_L"});
+        let rbox = this.objFactory.CreateShapeGameObject(new Vector3(-size, 0, 0), ShapeType.Box, {name : "objBoundary_R"});
+        let dbox = this.objFactory.CreateShapeGameObject(new Vector3(0, -size, 0), ShapeType.Box, {name : "objBoundary_D"});
+        let ubox = this.objFactory.CreateShapeGameObject(new Vector3(0, size, 0), ShapeType.Box, {name : "objBoundary_U"});
+        let fbox = this.objFactory.CreateShapeGameObject(new Vector3(0, 0, size), ShapeType.Box, {name : "objBoundary_F"});
+        let bbox = this.objFactory.CreateShapeGameObject(new Vector3(0, 0, -size), ShapeType.Box, {name : "objBoundary_B"});
 
-        l.transform.Position = l.transform.Position.add(position);
-        l.transform.Scale = new Vector3(1, 10, 10);
+        lbox.transform.Position = lbox.transform.Position.add(position);
+        lbox.transform.Scale = new Vector3(10, scale, scale);
+        rbox.transform.Position = rbox.transform.Position.add(position);
+        rbox.transform.Scale = new Vector3(10, scale, scale);
 
-        lRoot.AddChild(l);
+        dbox.transform.Position = dbox.transform.Position.add(position);
+        dbox.transform.Scale = new Vector3(scale, 10, scale);
+        ubox.transform.Position = ubox.transform.Position.add(position);
+        ubox.transform.Scale = new Vector3(scale, 10, scale);
+
+        fbox.transform.Position = fbox.transform.Position.add(position);
+        fbox.transform.Scale = new Vector3(scale, scale, 10);
+        bbox.transform.Position = bbox.transform.Position.add(position);
+        bbox.transform.Scale = new Vector3(scale, scale, 10);
+
+        this.confBoxVisability(lbox);
+        this.confBoxVisability(rbox);
+        this.confBoxVisability(dbox);
+        this.confBoxVisability(ubox);
+        this.confBoxVisability(fbox);
+        this.confBoxVisability(bbox);
+
+        let physCmp1 = new PhysicsComponent(PhysicsMotionType.STATIC, PhysicsShapeType.MESH, 1000, 1)
+        let physCmp2 = new PhysicsComponent(PhysicsMotionType.STATIC, PhysicsShapeType.MESH, 1000, 1)
+        let physCmp3 = new PhysicsComponent(PhysicsMotionType.STATIC, PhysicsShapeType.MESH, 1000, 1)
+        let physCmp4 = new PhysicsComponent(PhysicsMotionType.STATIC, PhysicsShapeType.MESH, 1000, 1)
+        let physCmp5 = new PhysicsComponent(PhysicsMotionType.STATIC, PhysicsShapeType.MESH, 1000, 1)
+        let physCmp6 = new PhysicsComponent(PhysicsMotionType.STATIC, PhysicsShapeType.MESH, 1000, 1)
+
+        lbox.AddComponent(physCmp1);
+        rbox.AddComponent(physCmp2);
+        dbox.AddComponent(physCmp3);
+        ubox.AddComponent(physCmp4);
+        fbox.AddComponent(physCmp5);
+        bbox.AddComponent(physCmp6);
+
+        physCmp1.EnableCollisions();
+        physCmp2.EnableCollisions();
+        physCmp3.EnableCollisions();
+        physCmp4.EnableCollisions();
+        physCmp5.EnableCollisions();
+        physCmp6.EnableCollisions();
+
+        lRoot.AddChild(lbox);
+        lRoot.AddChild(rbox);
+        lRoot.AddChild(dbox);
+        lRoot.AddChild(ubox);
+        lRoot.AddChild(fbox);
+        lRoot.AddChild(bbox);
+
+        lRoot.transform.Scale = new Vector3(1,1,1);
     }
 
     private createCamera()
@@ -135,7 +201,7 @@ export class PhysicsGame extends Game
 
     private createLargeSphere(pos : Vector3) : GameObject
     {
-        let result = this.objFactory.CreateShapeGameObject(pos, ShapeType.Sphere, "star");
+        let result = this.objFactory.CreateShapeGameObject(pos, ShapeType.Sphere, {name : "star"});
         result.transform.Scale = new Vector3(5,5,5);
 
         let physAttCmp = new PhysicsAttractor();
@@ -143,12 +209,15 @@ export class PhysicsGame extends Game
         physAttCmp.radius = 200;
         physAttCmp.strength = 30;
 
-        let physCmp = new PhysicsComponent();
+        let physCmp = new PhysicsComponent(PhysicsMotionType.DYNAMIC);
         physCmp.shapeType = PhysicsShapeType.MESH;
         physCmp.mass = 10000;
+        
 
         result.AddComponent(physAttCmp);
         result.AddComponent(physCmp);
+
+        physCmp.EnableCollisions();
 
         let matCmp = result.GetComponent(MeshComponent);
         let mat = matCmp?.GetMaterial() as StandardMaterial;
@@ -173,6 +242,7 @@ export class PhysicsGame extends Game
 
         let sPCmp = sphere0.GetComponent(PhysicsComponent) as PhysicsComponent;
         sPCmp.ApplyImpulse(new Vector3(0,0,-5))
+        sPCmp.EnableCollisions();
         
         for (var i = 0; i < count; i++)
         {
@@ -186,7 +256,7 @@ export class PhysicsGame extends Game
             let rz = Random.GetNumber(-maxSpeed, maxSpeed);
             let rv = new Vector3(rx,ry,rz);
 
-            let gameObj = this.objFactory.CreateShapeGameObject(v, ShapeType.Box, "obj" + i);
+            let gameObj = this.objFactory.CreateShapeGameObject(v, ShapeType.Box, {name : "obj" + i});
             gameObj.transform.Scale = new Vector3(0.5,0.5,0.5);
             
             let meshCmp = gameObj.GetComponent(MeshComponent);
@@ -195,7 +265,7 @@ export class PhysicsGame extends Game
             mat.diffuseColor = mat.ambientColor;
             mat.emissiveColor = mat.ambientColor;
 
-            let physCmp = new PhysicsComponent();
+            let physCmp = new PhysicsComponent(PhysicsMotionType.DYNAMIC);
             physCmp.shapeType = PhysicsShapeType.BOX;
             physCmp.mass = 10;
 

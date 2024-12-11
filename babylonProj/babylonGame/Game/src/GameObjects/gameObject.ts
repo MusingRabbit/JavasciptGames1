@@ -73,7 +73,7 @@ export class GameObject
         {
             if (cmp instanceof type)
             {
-                result = <T>cmp;
+                result = <T>cmp as T;
                 return result;
             }
         }

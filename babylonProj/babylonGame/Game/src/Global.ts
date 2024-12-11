@@ -14,4 +14,12 @@ export enum ShapeType
     TiledPlane,
     Capsule,
     Ground,
+    Cylinder,
+}
+
+export enum MeshOrientation
+{
+    Front = 0,
+    Back = 1,
+    Double = 2
 }

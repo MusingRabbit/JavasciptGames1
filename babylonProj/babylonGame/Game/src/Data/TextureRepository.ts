@@ -29,11 +29,11 @@ export class TextureRepository
 
     public get OnLoadCompleted() { return this.onLoadCompleted.expose(); }
 
-    constructor(loadTimeout : number)
+    constructor(textureDirectory : string, loadTimeout : number)
     {
         this.loadingFlags = new Map<string, boolean>();
         this.textureCache = new Map<string, TextureData>();
-        this.txrDir = "assets/textures/";
+        this.txrDir = textureDirectory;
         this.loadTimeout = loadTimeout;
     }
 

@@ -1,4 +1,4 @@
-import { Material, Mesh, MultiMaterial, Nullable, StandardMaterial, Texture } from "@babylonjs/core";
+import { Material, Mesh, MultiMaterial, Nullable, StandardMaterial, Texture, VertexBuffer } from "@babylonjs/core";
 import { TextureData } from "../Data/TextureRepository";
 import { Component } from "./component";
 
@@ -30,9 +30,9 @@ export class MeshComponent extends Component
         }
     }
 
-    public GetMaterial<T extends Material>() : Nullable<T>
+    public GetMaterial<T extends Material>() : T
     {
-        return <T>this.mesh.material;
+        return <T>this.mesh.material as T;
     }
 
     public SetMaterial(material : Material)
@@ -48,6 +48,23 @@ export class MeshComponent extends Component
     public GetTexture() : Nullable<Texture>
     {
         return this.texture;
+    }
+
+    public flipNormals()
+    {
+        var normals = this.mesh.getVerticesData(VertexBuffer.NormalKind);
+
+        if (!normals)
+        {
+            return;
+        }
+
+        for(let i=0; i< normals.length; i++)
+        {
+            normals[i] *= -1;
+        }
+            
+        this.mesh.setVerticesData(VertexBuffer.NormalKind, normals);
     }
 
     public SetTextureData(data : TextureData)
@@ -66,7 +83,7 @@ export class MeshComponent extends Component
                 if (mat instanceof StandardMaterial)
                 {
                     mat.diffuseTexture = data.texture;
-                    mat.ambientTexture = data.texture;
+                    //mat.ambientTexture = data.texture;
 
                     if (!data.normal.loadingError)
                         mat.bumpTexture = data.normal;

@@ -7,7 +7,7 @@ export class LightComponent extends Component
 
     public GetLight<T>() : T
     {
-        return <T>this.light;
+        return <T>this.light as T;
     }
 
     public SetLight<T extends Light>(light : T){

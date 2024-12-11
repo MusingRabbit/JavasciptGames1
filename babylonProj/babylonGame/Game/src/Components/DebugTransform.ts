@@ -44,18 +44,18 @@ export class DebugTransform extends Component
                 let transform = this.gameObject.transform;
 
                 let upLinePoints = [
-                    transform.position,
-                    transform.position.add(transform.Up().scale(transform.GetSize() * this.lineLengthMultiplier))
+                    transform.Position,
+                    transform.Position.add(transform.Up().scale(transform.GetSize() * this.lineLengthMultiplier))
                 ];
         
                 let fwdLinePoints = [ 
-                    transform.position,
-                    transform.position.add(transform.Forward().scale(transform.GetSize() * this.lineLengthMultiplier))
+                    transform.Position,
+                    transform.Position.add(transform.Forward().scale(transform.GetSize() * this.lineLengthMultiplier))
                 ];
         
                 let rgtLinePoints = [ 
-                    transform.position,
-                    transform.position.add(transform.Right().scale(transform.GetSize() * this.lineLengthMultiplier))
+                    transform.Position,
+                    transform.Position.add(transform.Right().scale(transform.GetSize() * this.lineLengthMultiplier))
                 ];
         
         

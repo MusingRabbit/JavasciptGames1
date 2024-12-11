@@ -1,5 +1,6 @@
 import { Scene, Vector3, Color3, HemisphericLight, PointLight, DirectionalLight, SpotLight, Mesh, MeshBuilder, StandardMaterial, Vector2, Texture, IShadowLight, ShadowGenerator, ArcRotateCamera, Quaternion, Nullable, FreeCamera, Material, MultiMaterial, SubMesh } from "@babylonjs/core";
 import { Transform } from "../Components/Transform";
+import { CreateGameObjectArgs } from "./ComponentFactory";
 
 export default class SceneObjectBuilder {
   scene: Scene;
@@ -47,13 +48,22 @@ export default class SceneObjectBuilder {
     return result;
   }
 
-  public CreateBox(name: string, transform : Transform): Mesh {
-    let result = MeshBuilder.CreateBox(name, { size: transform.GetSize() }, this.scene);
+  public CreateBox(name: string, transform : Transform, args? : CreateGameObjectArgs): Mesh {
+
+    let createBoxArgs = { size: transform.GetSize() };
+
+    if (args?.faceUV)
+    {
+      createBoxArgs["wrap"] = true;
+      createBoxArgs["faceUV"] = args.faceUV;
+    }
+
+    let result = MeshBuilder.CreateBox(name, createBoxArgs, this.scene);
     result.position = transform.Position;
     result.rotationQuaternion = transform.Rotation;
 
     result.receiveShadows = true;
-    result.material = this.createDefaultMaterial("mat_" + name);
+    result.material = this.CreateDefaultMaterial("mat_" + name);
 
     return result;
   }
@@ -65,18 +75,38 @@ export default class SceneObjectBuilder {
     result.rotationQuaternion = transform.Rotation;
 
     result.receiveShadows = true;
-    result.material = this.createDefaultMaterial("mat_" + name);
+    result.material = this.CreateDefaultMaterial("mat_" + name);
 
     return result;
   }
 
   public CreateSphere(name: string, transform: Transform, segments: number = 32) {
-    let result = MeshBuilder.CreateSphere(name, { diameter: transform.Scale.x, segments: segments }, this.scene);
+    let result = MeshBuilder.CreateSphere(name, { diameterX: transform.Scale.x, diameterY : transform.Scale.y, diameterZ : transform.Scale.z, segments: segments }, this.scene);
 
     result.position = transform.Position;
     result.rotationQuaternion = transform.Rotation;
     result.receiveShadows = true;
-    result.material = this.createDefaultMaterial("mat_" + name);
+    result.material = this.CreateDefaultMaterial("mat_" + name);
+
+    return result;
+  }
+
+  public CreateCylinder(name : string, transform : Transform, tessalation : number, args? : CreateGameObjectArgs){
+
+    let createCylinderArgs = { diameter : transform.Scale.x, tessellation : tessalation };
+
+    if (args?.faceUV)
+    {
+      createCylinderArgs["wrap"] = true;
+      createCylinderArgs["faceUV"] = args.faceUV;
+    }
+
+    let result = MeshBuilder.CreateCylinder(name, createCylinderArgs, this.scene);
+
+    result.position = transform.Position;
+    result.rotationQuaternion = transform.Rotation;
+    result.receiveShadows = true;
+    result.material = this.CreateDefaultMaterial("mat_" + name);
 
     return result;
   }
@@ -87,9 +117,9 @@ export default class SceneObjectBuilder {
 
     for (var i = 0; i < size; i++)
     {
-      let mat = this.createDefaultMaterial(name + i);
+      let mat = this.CreateDefaultMaterial(name + i);
       mat.maxSimultaneousLights = 2;
-      result.subMaterials.push(this.createDefaultMaterial(name + i));
+      result.subMaterials.push(this.CreateDefaultMaterial(name + i));
     }
     
 
@@ -111,14 +141,15 @@ export default class SceneObjectBuilder {
   }
 
 
-  private createDefaultMaterial(name: string) {
+  public CreateDefaultMaterial(name: string) {
     let result = new StandardMaterial(name, this.scene);
     result.backFaceCulling = true;
     result.sideOrientation = Material.CounterClockWiseSideOrientation;
     result.maxSimultaneousLights = 6;
-    result.ambientColor = Color3.White();
+    //result.ambientColor = Color3.White();
     //result.emissiveColor = Color3.White();
-    result.specularPower = 8.0;
+    result.specularColor = Color3.Black();
+    result.specularPower = 0.8;
     return result;
   }
 
@@ -141,16 +172,30 @@ export default class SceneObjectBuilder {
   }
 
 
-  public CreatePlane(name: string, transform : Transform, tiled : boolean, tessalate : number = 8) {
+  public CreatePlane(name: string, transform : Transform, tiled : boolean, tessalate : number = 8, args? : CreateGameObjectArgs) {
     let result : Nullable<Mesh> = null;
 
+    let createPlaneArgs = { size : transform.GetSize(), sideOrientation: Mesh.FRONTSIDE, pattern : Mesh.FLIP_TILE };
+
+    if (args?.orientation)
+    {
+      createPlaneArgs.sideOrientation = args.orientation;
+    }
+
+    if (args?.faceUV)
+    {
+      createPlaneArgs["wrap"] = true;
+      createPlaneArgs["faceUV"] = args.faceUV;
+    }
+    
     if (tiled)
     {
-      result = MeshBuilder.CreateTiledPlane(name, { size : transform.GetSize(), sideOrientation: Mesh.FRONTSIDE, pattern : Mesh.FLIP_TILE }, this.scene);
+      createPlaneArgs["pattern"] = Mesh.NO_FLIP;
+      result = MeshBuilder.CreateTiledPlane(name, createPlaneArgs, this.scene);
     }
     else 
     {
-      result = MeshBuilder.CreatePlane(name, { sideOrientation: Mesh.FRONTSIDE }, this.scene);
+      result = MeshBuilder.CreatePlane(name, createPlaneArgs, this.scene);
     }
 
     if (tessalate > 0)
@@ -161,9 +206,9 @@ export default class SceneObjectBuilder {
     result.position = transform.Position;
     result.scaling = transform.Scale;
 
-    let mat = this.createDefaultMaterial("mat_" + name);
+    let mat = this.CreateDefaultMaterial("mat_" + name);
     mat.diffuseColor = Color3.White();
-    mat.specularColor = Color3.White();
+    //mat.specularColor = Color3.White();
 
     result.material = mat;
 

@@ -30,9 +30,9 @@ export class MeshRepository
 
     public get OnLoadCompleted() { return this.onLoadCompleted.expose(); }
 
-    constructor() {
+    constructor(modelDirectory : string) {
         this.cache = new Map<string, MeshData>();
-        this.modelDir = "assets/models/";
+        this.modelDir = modelDirectory;
     }
 
     public ClearCache()

@@ -62,7 +62,7 @@ export class GameObjectSystem extends System {
                 if (gameObj.transform.isDirty) // Only update mesh if the transform has been set elsewhere...
                 {
                     physCmp.Disable();
-                    this.updateMeshTransforms(gameObj.GetWorldTransform(), meshCmp);
+                    this.updateMeshTransforms(gameObj.transform, meshCmp);
                     physCmp.Enable();
                 }
                 else    // Update the game objects transform with the updated mesh position & rotation...
@@ -74,7 +74,7 @@ export class GameObjectSystem extends System {
             }
             else        // Update mesh
             {
-                this.updateMeshTransforms(gameObj.GetWorldTransform(), meshCmp);
+                this.updateMeshTransforms(gameObj.transform, meshCmp);
             }
 
             this.updateMaterialSettings(meshCmp);
