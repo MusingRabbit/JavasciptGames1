@@ -66,7 +66,6 @@ export class PhysicsComponent extends Component
         rc.mesh.isPickable = true;
         
         this.aggregate = new PhysicsAggregate(rc.mesh, this.shapeType, { mass, restitution }, rc.mesh.getScene());
-
         this.aggregate.body.setMotionType(this.motionType);
 
         this.body = this.aggregate.body;

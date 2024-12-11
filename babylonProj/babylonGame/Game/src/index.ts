@@ -59,7 +59,7 @@ function startGame(gameName : string) : Game | null
 
         game.Initialise();
         game.Run();
-        game.ShowDebugLayer();
+        //game.ShowDebugLayer();
 
         return game;
     }
@@ -107,14 +107,14 @@ function createGui(scene : Scene)
     let advTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
     let screenWidthRatio =  canvas.height / canvas.width;
-    let screenHeightRatio = canvas.width / canvas.height;
+    let screenHeightRatio = canvas.height / canvas.width;
     let buttonDim = new Vector2(75,50);
-    let btnPos = new Vector2(1 * screenWidthRatio, 140 * screenHeightRatio);
-    let btn1Pos = new Vector2(-200 * screenWidthRatio, 140 * screenHeightRatio);
-    let btn2Pos = new Vector2(200 * screenWidthRatio, 140 * screenHeightRatio);
-    let btn3Pos = new Vector2(400 * screenWidthRatio, 140 * screenHeightRatio);
-    let btn4Pos = new Vector2(-400 * screenWidthRatio, 140 * screenHeightRatio);
-    let btn5Pos = new Vector2(600 * screenWidthRatio, 140 * screenHeightRatio);
+    let btnPos = new Vector2(1 * screenWidthRatio, 512 * screenHeightRatio);
+    let btn1Pos = new Vector2(-200 * screenWidthRatio, 512 * screenHeightRatio);
+    let btn2Pos = new Vector2(200 * screenWidthRatio, 512 * screenHeightRatio);
+    let btn3Pos = new Vector2(400 * screenWidthRatio, 512 * screenHeightRatio);
+    let btn4Pos = new Vector2(-400 * screenWidthRatio, 512 * screenHeightRatio);
+    let btn5Pos = new Vector2(600 * screenWidthRatio, 512 * screenHeightRatio);
 
     let btnReset = createButton({name : "btnReset", text : "Reset", pos : btnPos, dimensions : buttonDim});
     let btnTemple = createButton({name : "btnTemple", text : "Temple", pos : btn1Pos, dimensions : buttonDim});

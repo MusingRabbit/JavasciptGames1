@@ -10,7 +10,9 @@
     "buildLighting01": "tsc && vite build lighting01",
     "previewLightint01": "vite preview lighting01 --host",
     "buildVillage": "tsc && vite build village",
-    "previewVillage": "vite preview village --host"
+    "previewVillage": "vite preview village --host",
+    "buildGame": "tsc && vite build game",
+    "previewGame": "vite preview game --host"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

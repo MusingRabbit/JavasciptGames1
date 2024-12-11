@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--https://bootstrap-cheatsheet.themeselection.com/-->
+<!--https://getbootstrap.com/docs/5.3/getting-started/introduction/-->
+<!--https://blog.getbootstrap.com/ -->
+<!--https://www.jsdelivr.com/package/npm/bootstrap -->
+<!--https://www.lipsum.com/  -->
+
+<html lang="en">
+<head>
+  <title>Scene Compilation</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+  <div class="container-fluid py-5 text-start text-sm-center" >
+    <h1 class="display-5 fw-bold">BabylonJS Scene Compilation</h1>
+    <p class="col-md-8 fs-4"><p>A simple site showcasing 5 scenes created as part of the "JavaScript for Games" course hosted by the University of West Scotland (UWS)</p>
+  </div>
+
+  <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="assets/musingRabbit.jpg" alt="logo" width="30" height="30"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBasic" aria-controls="navbarBasic" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarBasic">
+        <ul class="navbar-nav me-auto mb-2 mb-xl-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/MusingRabbit/">GitHub</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Demo
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="./game/game.html">Scene Compilation</a></li>
+            </ul>
+          </li>
+      </div>
+    </div>
+  </nav>  
+  
+<!--https://getbootstrap.com/docs/5.3/layout/grid/ -->  
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-sm-4">
+      <h3 style="text-align: center;">Temple</h3>
+      <p>The temple scene was the first scene I had a crack at making on my own, outside of the hand-holding of the UWS.</p>
+      <p>The lighting or the textures never really came out the way I liked them to, so I enabled a glow layer to bring about this bloom effect where all the emmissive colours really pop. It gave the scene a somewhat ethereal look.</p>
+    </div>
+    <div class="col-sm-4">
+      <h3 style="text-align: center;">Physics</h3>
+      <p>A simple physics simulation to simulate gravity. There are 2000 boxes within the scene and one sphere acting in the role of a planet or a star.</p>
+      <p>The boxes will be attracted to the sphere, until it is clicked on by which point the "star" will go black and all of the boxes will be repelled.</p>
+      <p>There is supposed to be a boundary in this scene to prevent the boxes from floating too far away, but it doesn't work. So in the event that that happens - click the 'Reset' button to reset the scene.</p>
+    </div>
+    <div class="col-sm-4">
+      <h3 style="text-align: center;">Motion</h3>        
+      <p>NEW AND IMPROVED! -> Character movement now takes the camera's orientation into account.</p>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Carousel https://getbootstrap.com/docs/5.3/components/carousel/ -->
+<div id="demo" class="carousel slide" data-bs-ride="carousel">
+
+    <!-- Indicators/dots -->
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+      <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+      <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+      <button type="button" data-bs-target="#demo" data-bs-slide-to="3"></button>
+      <button type="button" data-bs-target="#demo" data-bs-slide-to="4"></button>
+    </div>
+    
+    <!-- The slideshow/carousel -->
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="assets/lighting.JPG" alt="Lighting" class="d-block" style="width:100%">
+        <div class="carousel-caption">
+          <h3 style="background-color: black;">Lighting Demo</h3>
+          <p style="background-color: black;">A simple lighting scene, using BabylonJS</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img src="assets/motion.jpg" alt="Motion" class="d-block" style="width:100%">
+        <div class="carousel-caption">
+          <h3 style="background-color: black;">Motion Demo</h3>
+          <p style="background-color: black;">A simple player character motion demo. Use WSAD to control the character, and M to mute the music.</p>
+        </div> 
+      </div>
+      <div class="carousel-item">
+        <img src="assets/village.JPG" alt="Village" class="d-block" style="width:100%">
+        <div class="carousel-caption">
+          <h3 style="background-color: black;">Village</h3>
+          <p style="background-color: black;">A small village scene... enjoy your visit!</p>
+        </div>  
+      </div>
+      <div class="carousel-item">
+        <img src="assets/physics.JPG" alt="Physics" class="d-block" style="width:100%">
+        <div class="carousel-caption">
+          <h3 style="background-color: black;">Physics</h3>
+          <p style="background-color: black;">A gravity-like physics simulation containing 2000 objects. Toggle the stars attraction / repulsion effect by clicking on it!</p>
+        </div>  
+      </div>
+      <div class="carousel-item">
+        <img src="assets/temple.JPG" alt="Temple" class="d-block" style="width:100%">
+        <div class="carousel-caption">
+          <h3 style="background-color: black;">Temple</h3>
+          <p style="background-color: black;">A small temple illuminated by three circling directional lights. Quite the disco...</p>
+        </div>  
+      </div>
+    </div>
+    
+    <!-- Left and right controls/icons -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+
+</body>
+</html>

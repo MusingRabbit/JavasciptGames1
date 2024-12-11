@@ -76,6 +76,7 @@ export class VillageGame extends Game
     {
         let campos = new Vector3(0, 5, 0);
         this.camera = this.sceneBuilder.CreateFreeCamera("camera", campos, 1, true);
+        this.camera.position = new Vector3(10.5, 7.9, -13.46);
         let deltaV = Vector3.Zero().subtract(this.camera.position);
         this.camera.rotation = QuaternionHelper.QuaternionLookRotation(deltaV, Vector3.Up()).toEulerAngles();
     }
