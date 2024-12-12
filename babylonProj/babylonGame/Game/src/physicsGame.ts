@@ -72,7 +72,6 @@ export class PhysicsGame extends Game
     private setupScene() : void 
     {
         this.createCamera();
-        //this.setupSceneLighting();
         this.createObjects(2000);
         this.createBoundary(Vector3.Zero(), 200);
     }
@@ -81,7 +80,7 @@ export class PhysicsGame extends Game
     {
         let mc = boxObj.GetComponent(MeshComponent) as MeshComponent;
         mc.mesh.visibility = 0;                                         // Turn to 1 to see bounding boxes for debugging purposes...
-        let mat = mc.GetMaterial() as StandardMaterial;
+        let mat = mc.GetMaterial<StandardMaterial>();
         mat.ambientColor = new Color3(0.2,0.2,0.3);
         mat.emissiveColor = new Color3(0.05,0.05,0.075);
         mat.diffuseColor = mat.ambientColor;
@@ -213,7 +212,6 @@ export class PhysicsGame extends Game
         physCmp.shapeType = PhysicsShapeType.MESH;
         physCmp.mass = 10000;
         
-
         result.AddComponent(physAttCmp);
         result.AddComponent(physCmp);
 
@@ -240,9 +238,9 @@ export class PhysicsGame extends Game
 
         let sphere0 = this.createLargeSphere(Vector3.Zero());
 
-        let sPCmp = sphere0.GetComponent(PhysicsComponent) as PhysicsComponent;
-        sPCmp.ApplyImpulse(new Vector3(0,0,-5))
-        sPCmp.EnableCollisions();
+        let sPCmp = sphere0.GetComponent(PhysicsComponent);
+        sPCmp!.ApplyImpulse(new Vector3(0,0,-5))
+        sPCmp!.EnableCollisions();
         
         for (var i = 0; i < count; i++)
         {
@@ -260,10 +258,10 @@ export class PhysicsGame extends Game
             gameObj.transform.Scale = new Vector3(0.5,0.5,0.5);
             
             let meshCmp = gameObj.GetComponent(MeshComponent);
-            let mat = meshCmp?.GetMaterial() as StandardMaterial;
-            mat.ambientColor = Color3.Black();//  Random.GetColour3();
-            mat.diffuseColor = mat.ambientColor;
-            mat.emissiveColor = mat.ambientColor;
+            let mat = meshCmp?.GetMaterial<StandardMaterial>();
+            mat!.ambientColor = Color3.Black();//  Random.GetColour3();
+            mat!.diffuseColor = mat!.ambientColor;
+            mat!.emissiveColor = mat!.ambientColor;
 
             let physCmp = new PhysicsComponent(PhysicsMotionType.DYNAMIC);
             physCmp.shapeType = PhysicsShapeType.BOX;
